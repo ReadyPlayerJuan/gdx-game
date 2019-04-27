@@ -8,23 +8,17 @@ import java.util.LinkedList;
 public class InputManager implements InputProcessor {
     public static InputManager inputManager;
 
+    private static LinkedList<Double[]> pressedKeys = new LinkedList<Double[]>();
+    private static LinkedList<Double[]> heldKeys = new LinkedList<Double[]>();
+    private static LinkedList<Double[]> releasedKeys = new LinkedList<Double[]>();
+    private static double mouseX, mouseY;
+
     public static void init() {
         inputManager = new InputManager();
         Gdx.input.setInputProcessor(inputManager);
     }
 
-
-
-    private LinkedList<Double[]> pressedKeys, heldKeys, releasedKeys;
-    private double mouseX, mouseY;
-
-    public InputManager() {
-        pressedKeys = new LinkedList<Double[]>();
-        heldKeys = new LinkedList<Double[]>();
-        releasedKeys = new LinkedList<Double[]>();
-    }
-
-    public void update(double delta) {
+    public static void update(double delta) {
         for(Double[] d: heldKeys) {
             d[1] += delta;
             //System.out.println(d[0] + " " + d[1]);
@@ -34,17 +28,13 @@ public class InputManager implements InputProcessor {
         releasedKeys.clear();
     }
 
-    @Override
-    public boolean keyDown(int keycode) {
+    private static void processKeyPress(int keycode) {
         //add to pressed keys list
         pressedKeys.add(new Double[] {(double)keycode, 0.0});
         heldKeys.add(new Double[] {(double)keycode, 0.0});
-
-        return false;
     }
 
-    @Override
-    public boolean keyUp(int keycode) {
+    private static void processKeyRelease(int keycode) {
         //remove from pressed keys list
         for (int i = 0; i < heldKeys.size(); i++) {
             if (heldKeys.get(i)[0] == keycode) {
@@ -52,7 +42,17 @@ public class InputManager implements InputProcessor {
                 break;
             }
         }
+    }
 
+    @Override
+    public boolean keyDown(int keycode) {
+        processKeyPress(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        processKeyRelease(keycode);
         return false;
     }
 
@@ -63,21 +63,31 @@ public class InputManager implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        processKeyPress(button + 1000);
+        mouseX = screenX;
+        mouseY = screenY;
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        processKeyRelease(button + 1000);
+        mouseX = screenX;
+        mouseY = screenY;
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        mouseX = screenX;
+        mouseY = screenY;
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        mouseX = screenX;
+        mouseY = screenY;
         return false;
     }
 
@@ -88,23 +98,23 @@ public class InputManager implements InputProcessor {
 
 
 
-    public LinkedList<Double[]> getPressedKeys() {
+    public static LinkedList<Double[]> getPressedKeys() {
         return pressedKeys;
     }
 
-    public LinkedList<Double[]> getHeldKeys() {
+    public static LinkedList<Double[]> getHeldKeys() {
         return heldKeys;
     }
 
-    public LinkedList<Double[]> getReleasedKeys() {
+    public static LinkedList<Double[]> getReleasedKeys() {
         return releasedKeys;
     }
 
-    public double getMouseX() {
+    public static double getMouseX() {
         return mouseX;
     }
 
-    public double getMouseY() {
+    public static double getMouseY() {
         return mouseY;
     }
 }

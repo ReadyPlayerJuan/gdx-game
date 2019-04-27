@@ -1,26 +1,31 @@
 package com.mygdx.game.entities.projectiles;
 
-/*import main.game.entities.hitboxes.BodyHitbox;
-import main.game.entities.hitboxes.DamagerHitbox;
-import main.game.weapons.Weapon;
-import main.game.weapons.WeaponController;
-import rendering.EntityRenderer;
-import rendering.textures.Sprite;
-import rendering.textures.SpriteData;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.mygdx.game.entities.hitboxes.BodyHitbox;
+import com.mygdx.game.entities.hitboxes.DamagerHitbox;
+import com.mygdx.game.textures.TextureData;
+import com.mygdx.game.textures.TextureManager;
+import com.mygdx.game.weapons.Weapon;
+import com.mygdx.game.weapons.WeaponController;
 
 import static java.lang.Math.floor;
 
 public class TestProjectile extends Projectile {
-    private Sprite sprite;
+    private Animation<TextureRegion> animation;
+    private float animationTimer = 0;
+
     private DamagerHitbox hitbox;
 
     private boolean alive = true;
 
-    private double damage;
-    private double speed;
-    private double angle;
-    private double radius;
-    private double knockback;
+    private final double damage;
+    private final double speed;
+    private final double angle;
+    private final double radius;
+    private final double knockback;
 
     //inherited: protected Entity source;
     //inherited: protected Weapon weaponSource;
@@ -32,18 +37,19 @@ public class TestProjectile extends Projectile {
     //inherited: protected DamagerHitbox[] damagerHitboxes = new DamagerHitbox[0];
     //inherited: protected double terrainCollisionRadius = -1;
 
-    public TestProjectile(WeaponController source, Weapon weaponSource, SpriteData spriteData, double x, double y, double damage, double speed, double angle, double radius, double knockback) {
+    public TestProjectile(WeaponController source, Weapon weaponSource, TextureData texture, double x, double y, double dmg, double spd, double ang, double rad, double kbck) {
         super(source, weaponSource);
         this.x = x;
         this.y = y;
-        this.damage = damage;
-        this.speed = speed;
-        this.angle = angle;
-        this.radius = radius;
-        this.knockback = knockback;
+        this.damage = dmg;
+        this.speed = spd;
+        this.angle = ang;
+        this.radius = rad;
+        this.knockback = kbck;
         this.terrainCollisionRadius = radius;
 
-        sprite = new Sprite(spriteData).setPosition((float)x, (float)y).setSize((float)radius*2);
+        animation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
+        animation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new DamagerHitbox(this, team, radius) {
             @Override
@@ -70,14 +76,23 @@ public class TestProjectile extends Projectile {
         x = nextX;
         y = nextY;
 
-        sprite.setPosition((float)x, (float)y);
+        animationTimer += delta;
 
         hitbox.setPosition(x, y);
     }
 
     @Override
-    public void registerSprites(EntityRenderer renderer) {
-        renderer.registerSprite(sprite);
+    public void draw(SpriteBatch batch) {
+        batch.draw(animation.getKeyFrame(animationTimer),
+                (float)(x-radius),
+                (float)(y-radius),
+                (float)radius,
+                (float)radius,
+                (float)radius*2,
+                (float)radius*2,
+                1f,
+                1f,
+                0);
     }
 
     @Override
@@ -98,4 +113,3 @@ public class TestProjectile extends Projectile {
         slotMaxY = (int)floor((y + radius) / slotSize);
     }
 }
-*/

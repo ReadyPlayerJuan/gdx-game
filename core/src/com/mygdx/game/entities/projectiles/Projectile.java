@@ -1,8 +1,8 @@
 package com.mygdx.game.entities.projectiles;
 
-/*import main.game.entities.Entity;
-import main.game.weapons.Weapon;
-import main.game.weapons.WeaponController;
+import com.mygdx.game.entities.Entity;
+import com.mygdx.game.weapons.Weapon;
+import com.mygdx.game.weapons.WeaponController;
 
 public abstract class Projectile extends Entity {
     protected WeaponController source;
@@ -23,4 +23,3 @@ public abstract class Projectile extends Entity {
 
     //public abstract void
 }
-*/

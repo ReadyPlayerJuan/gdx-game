@@ -1,8 +1,6 @@
 package com.mygdx.game.entities;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.boards.BoardCamera;
@@ -11,12 +9,13 @@ import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
+import com.mygdx.game.weapons.WeaponController;
 
 import java.util.LinkedList;
 
 import static java.lang.Math.*;
 
-public class Player extends Entity /*implements WeaponController*/ {
+public class Player extends Entity implements WeaponController {
     private Animation<TextureRegion> idleAnimation;
     private float animationTimer = 0;
 
@@ -35,10 +34,9 @@ public class Player extends Entity /*implements WeaponController*/ {
 
     public Player() {
         super(Team.PLAYER);
-
         terrainCollisionRadius = radius;
 
-        idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 0.15f);
+        idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new BodyHitbox(this, team, radius) {
@@ -56,7 +54,7 @@ public class Player extends Entity /*implements WeaponController*/ {
 
     @Override
     public void updatePre(double delta) {
-        LinkedList<Double[]> heldKeys = InputManager.inputManager.getHeldKeys();
+        LinkedList<Double[]> heldKeys = InputManager.getHeldKeys();
 
         int moveX = 0;
         int moveY = 0;
@@ -104,12 +102,10 @@ public class Player extends Entity /*implements WeaponController*/ {
 
         hitbox.setPosition(x, y);
 
-        //TextureRegion t = idleAnimation.getKeyFrame(animationTimer);
-        //sprite.setTexture(t);
 
-        //targetX = InputManager.mouseX - boardCamera.getViewWidth()/2 + boardCamera.getCenterX() - x;
-        //targetY = -InputManager.mouseY + boardCamera.getViewHeight()/2 + boardCamera.getCenterY() - y;
-        //PlayerData.getEquippedWeapon(currentWeaponIndex).update(delta, this);
+        targetX = InputManager.getMouseX() - boardCamera.viewportWidth/2 + boardCamera.position.x - x;
+        targetY = InputManager.getMouseY() - boardCamera.viewportHeight/2 + boardCamera.position.y - y;
+        PlayerData.getEquippedWeapon(currentWeaponIndex).update(delta, this);
     }
 
     @Override
@@ -150,7 +146,7 @@ public class Player extends Entity /*implements WeaponController*/ {
         slotMaxY = (int)floor((y + radius) / slotSize);
     }
 
-    /*@Override
+    @Override
     public double getTargetX() {
         return targetX;
     }
@@ -168,5 +164,5 @@ public class Player extends Entity /*implements WeaponController*/ {
     @Override
     public boolean wasFiringWeapon() {
         return prevFiringWeapon;
-    }*/
+    }
 }

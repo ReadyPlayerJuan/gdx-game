@@ -1,7 +1,9 @@
 package com.mygdx.game.entities.enemies;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.entities.Entity;
 import com.mygdx.game.entities.Team;
 import com.mygdx.game.entities.hitboxes.BodyHitbox;
@@ -9,7 +11,9 @@ import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
 
 public class Dummy extends Entity {
-    private Sprite sprite;
+    private Animation<TextureRegion> idleAnimation;
+    private float animationTimer = 0;
+
     private BodyHitbox hitbox;
 
     private final double maxHealth = 30;
@@ -21,9 +25,8 @@ public class Dummy extends Entity {
 
         terrainCollisionRadius = radius;
 
-        //sprite = new Sprite(SpriteData.PLAYER).setPosition((float)x, (float)y).setSize((float)radius*2);
-        sprite = new Sprite(TextureManager.getTexture(TextureData.TEST_IMAGE));
-        sprite.setSize((float)radius, (float)radius);
+        idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
+        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new BodyHitbox(this, team, radius) {
             @Override
@@ -49,16 +52,24 @@ public class Dummy extends Entity {
     public void updatePost(double delta) {
         x = nextX;
         y = nextY;
-        sprite.setRotation(sprite.getRotation() + 0.01f);
-        //sprite.setImageIndex((int)(WindowManager.getTime() * 1.0) % 4);
-        sprite.setPosition((float)x, (float)y);
+
+        animationTimer += (float)delta;
 
         hitbox.setPosition(x, y);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        sprite.draw(batch);
+        batch.draw(idleAnimation.getKeyFrame(animationTimer),
+                (float)(x-radius),
+                (float)(y-radius),
+                (float)radius,
+                (float)radius,
+                (float)radius*2,
+                (float)radius*2,
+                1f,
+                1f,
+                0);
     }
 
     @Override

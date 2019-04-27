@@ -10,6 +10,9 @@ import com.mygdx.game.boards.BoardPreset1;
 import com.mygdx.game.boards.BoardCamera;
 import com.mygdx.game.entities.EntityManager;
 import com.mygdx.game.entities.Player;
+import com.mygdx.game.entities.PlayerData;
+import com.mygdx.game.entities.enemies.Dummy;
+import com.mygdx.game.weapons.guns.Pistol;
 
 public class GameView extends View {
     private EntityManager entityManager;
@@ -22,7 +25,7 @@ public class GameView extends View {
     public GameView(View parentView, int width, int height) {
         super(parentView, width, height);
 
-        //PlayerData.setEquippedWeapon(0, new Pistol());
+        PlayerData.setEquippedWeapon(0, new Pistol());
 
         entityManager = new EntityManager();
         board = new BoardPreset1(this);
@@ -35,11 +38,11 @@ public class GameView extends View {
         p.setBoardCamera(camera);
         camera.follow(p, 16);
 
-        /*new Dummy(100, 100);
+        new Dummy(100, 100);
         new Dummy(100, 150);
         new Dummy(100, 200);
         new Dummy(100, 250);
-        new Dummy(100, 300);*/
+        new Dummy(100, 300);
     }
 
     @Override
