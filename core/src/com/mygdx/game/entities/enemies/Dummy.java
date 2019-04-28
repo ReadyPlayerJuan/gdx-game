@@ -1,7 +1,6 @@
 package com.mygdx.game.entities.enemies;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.entities.Entity;
@@ -9,6 +8,10 @@ import com.mygdx.game.entities.Team;
 import com.mygdx.game.entities.hitboxes.BodyHitbox;
 import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
+import com.mygdx.game.util.Util;
+
+import static java.lang.Math.*;
+import static java.lang.Math.abs;
 
 public class Dummy extends Entity {
     private Animation<TextureRegion> idleAnimation;
@@ -19,6 +22,12 @@ public class Dummy extends Entity {
     private final double maxHealth = 30;
     private double health = maxHealth;
     private double radius = 20;
+    private double accel = 1500;
+    private double friction = 1.0;
+
+    private double maxPushSpeed = 200;
+    private double pushVelX = 0;
+    private double pushVelY = 0;
 
     public Dummy(double x, double y) {
         super(Team.ENEMY, x, y);
@@ -32,11 +41,25 @@ public class Dummy extends Entity {
             @Override
             public void takeDamage(double damage, double knockback, double knockbackAngle) {
                 health -= damage;
-                System.out.println("health: " + health);
-                //xVel += knockback * Math.cos(knockbackAngle);
-                //yVel += knockback * Math.sin(knockbackAngle);
+                //System.out.println("health: " + health);
+                xVel += knockback * Math.cos(knockbackAngle);
+                yVel += knockback * Math.sin(knockbackAngle);
+            }
+
+            @Override
+            public void getPushedBy(BodyHitbox other) {
+                double angle = Math.atan2(other.getY() - y, other.getX() - x);
+                double normalX = Math.cos(angle);
+                double normalY = Math.sin(angle);
+
+                double distance = Math.hypot(other.getY() - y, other.getX() - x);
+                double pushPct = Math.max(0, Math.min(1, Util.mix(1.0, -0.05, Math.pow(distance / (radius + other.getRadius()), 3))));
+
+                pushVelX -= maxPushSpeed * pushPct * normalX;
+                pushVelY -= maxPushSpeed * pushPct * normalY;
             }
         };
+        hitbox.setPosition(x, y);
 
         bodyHitboxes = new BodyHitbox[] {hitbox};
         registerEntityAndHitboxes();
@@ -44,8 +67,20 @@ public class Dummy extends Entity {
 
     @Override
     public void updatePre(double delta) {
-        nextX = x + xVel * delta;
-        nextY = y + yVel * delta;
+        //friction
+        double vel = Math.hypot(xVel, yVel);
+        double angle = Math.atan2(yVel, xVel);
+        vel = signum(vel) * max(0, abs(vel) - accel * friction * delta);
+        xVel = vel * cos(angle);
+        yVel = vel * sin(angle);
+
+
+        //set next position for collision detection
+        nextX = x + (xVel + pushVelX) * delta;
+        nextY = y + (yVel + pushVelY) * delta;
+
+        pushVelX = 0;
+        pushVelY = 0;
     }
 
     @Override

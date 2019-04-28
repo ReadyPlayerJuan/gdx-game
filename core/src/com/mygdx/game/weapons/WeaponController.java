@@ -10,4 +10,6 @@ public interface WeaponController {
     public double getTargetY();
     public boolean isFiringWeapon();
     public boolean wasFiringWeapon();
+
+    public void kick(double angle, double kick);
 }

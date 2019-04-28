@@ -29,10 +29,10 @@ public class Pistol extends Weapon {
             {12.0, 15.0},   //DAMAGE
             {400, 500},     //BULLET SPEED
             {11.0, 13.0},    //BULLET SIZE
-            {80, 120},      //BULLET KNOCKBACK
+            {200, 250},      //BULLET KNOCKBACK
             {0.06, 0.08},   //WEAPON SPREAD
             {2.75, 3.25},   //WEAPON FIRE RATE
-            {40.0, 60.0},   //WEAPON KICK
+            {150.0, 190.0},   //WEAPON KICK
     };
 
     //inherited: protected WeaponStat[] stats;
@@ -68,13 +68,15 @@ public class Pistol extends Weapon {
 
     protected void fire(double delta, WeaponController controller) {
         double angle = Math.atan2(controller.getTargetY(), controller.getTargetX());
-        angle += Math.toRadians(180) * stats[4][1] * Math.random() * Math.signum(Math.random()-0.5); //add angle variation
+        double variedAngle = angle + Math.toRadians(180) * stats[4][1] * Math.random() * Math.signum(Math.random()-0.5); //add angle variation
+
+        controller.kick(angle + Math.PI, stats[6][1]);
 
         new TestProjectile(controller, this, TextureData.PLAYER_SHEET,
                 controller.getX(), controller.getY(),
                 stats[0][1],   //damage
                 stats[1][1],   //speed
-                angle,         //angle
+                variedAngle,         //angle
                 stats[2][1],   //bullet radius
                 stats[3][1]);  //knockback
     }

@@ -25,6 +25,7 @@ public class EntityManager {
 
     private CellEventManager<Wall, Entity> terrainCollisionEventManager;
     private CellEventManager<BodyHitbox, DamagerHitbox> hitboxCollisionEventManager;
+    private CellEventManager<BodyHitbox, BodyHitbox> hitboxPushCollisionEventManager;
 
     public EntityManager() {
         setCurrent();
@@ -62,10 +63,22 @@ public class EntityManager {
                 }
             }
         };
+        hitboxPushCollisionEventManager = new CellEventManager<BodyHitbox, BodyHitbox>() {
+            @Override
+            public void event(BodyHitbox item1, BodyHitbox item2) {
+                if(!item1.equals(item2) && item1.getOwner().isAlive() && item2.getOwner().isAlive() && item2.overlapping(item1)) {
+                    item1.getPushedBy(item2);
+                    item2.getPushedBy(item1);
+                }
+            }
+        };
     }
 
     public void updateEntities(double delta, Board board) {
         setCurrent();
+
+        prepareEntityHitboxes();
+        collideEntityBodies();
 
         for(Entity e: playerEntities) {
             e.updatePre(delta);
@@ -97,7 +110,7 @@ public class EntityManager {
         addNewEntities();
     }
 
-    private void collideEntities() {
+    private void prepareEntityHitboxes() {
         slottedPlayerBodyHitboxes.clear();
         slottedEnemyBodyHitboxes.clear();
         slottedPlayerDamagerHitboxes.clear();
@@ -111,8 +124,16 @@ public class EntityManager {
             slottedEnemyBodyHitboxes.addAndUpdateAll(e.getBodyHitboxes(), Board.CELL_SIZE);
             slottedEnemyDamagerHitboxes.addAndUpdateAll(e.getDamagerHitboxes(), Board.CELL_SIZE);
         }
+    }
 
-        //hitboxCollisionEventManager.callEvents(slottedPlayerBodyHitboxes, slottedEnemyDamagerHitboxes);
+    private void collideEntityBodies() {
+        hitboxPushCollisionEventManager.callEvents(slottedPlayerBodyHitboxes, slottedEnemyBodyHitboxes);
+        hitboxPushCollisionEventManager.callEvents(slottedPlayerBodyHitboxes, slottedPlayerBodyHitboxes);
+        hitboxPushCollisionEventManager.callEvents(slottedEnemyBodyHitboxes, slottedEnemyBodyHitboxes);
+    }
+
+    private void collideEntities() {
+        hitboxCollisionEventManager.callEvents(slottedPlayerBodyHitboxes, slottedEnemyDamagerHitboxes);
         hitboxCollisionEventManager.callEvents(slottedEnemyBodyHitboxes, slottedPlayerDamagerHitboxes);
     }
 

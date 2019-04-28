@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.textures.TextureManager;
+import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.views.MainView;
 import com.mygdx.game.views.View;
 
@@ -21,6 +22,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 		InputManager.init();
 		TextureManager.loadTextures();
+		FontManager.init();
 
 		mainView = new MainView(WIDTH, HEIGHT);
 		batch = new SpriteBatch();
@@ -29,7 +31,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void render() {
 		float delta = Gdx.graphics.getDeltaTime();
-		InputManager.inputManager.update(delta);
+		InputManager.update(delta);
 
 		mainView.update(delta);
 		mainView.preDraw();
@@ -47,5 +49,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.dispose();
 		mainView.dispose();
 		TextureManager.dispose();
+		FontManager.dispose();
 	}
 }

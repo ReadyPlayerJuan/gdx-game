@@ -14,4 +14,5 @@ public abstract class BodyHitbox extends Hitbox {
     }
 
     public abstract void takeDamage(double damage, double knockback, double knockbackAngle);
+    public abstract void getPushedBy(BodyHitbox other);
 }

@@ -55,7 +55,10 @@ public class TestProjectile extends Projectile {
             @Override
             public void damage(BodyHitbox other) {
                 alive = false;
-                other.takeDamage(damage, knockback, 0);
+
+                double collisionAngle = Math.atan2(other.getY() - y, other.getX() - x);
+                double knockbackAngle = (angle + collisionAngle) / 2;
+                other.takeDamage(damage, knockback, knockbackAngle);
             }
         };
         damagerHitboxes = new DamagerHitbox[] {hitbox};

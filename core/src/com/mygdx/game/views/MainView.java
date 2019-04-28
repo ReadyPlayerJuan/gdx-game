@@ -1,13 +1,14 @@
 package com.mygdx.game.views;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.ui.FontManager;
 
 public class MainView extends View {
     private View gameView;
 
     public MainView(int width, int height) {
         super(null, width, height);
-
         gameView = new GameView(this, width, height);
     }
 
@@ -24,6 +25,8 @@ public class MainView extends View {
     @Override
     public void draw(SpriteBatch batch) {
         gameView.draw(batch);
+        FontManager.debugFont.setColor(0, 0, 0, 1);
+        FontManager.debugFont.draw(batch, "FPS " + Gdx.graphics.getFramesPerSecond(), 0, height);
     }
 
     @Override
