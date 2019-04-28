@@ -144,4 +144,8 @@ public class InputManager implements InputProcessor {
     public static double getMouseY() {
         return mouseY;
     }
+
+    public static double getFlippedMouseY() {
+        return Gdx.graphics.getHeight() - mouseY;
+    }
 }

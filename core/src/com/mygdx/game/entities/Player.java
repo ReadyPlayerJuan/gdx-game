@@ -85,16 +85,16 @@ public class Player extends Entity implements WeaponController {
         firingWeapon = false;
         for(Double[] keys: heldKeys) {
             //System.out.println(keys[0] + " " + keys[1]);
-            if(keys[0] == ControlMapping.MOVE_LEFT.keyCode)
+            if(keys[0] == ControlMapping.MOVE_LEFT)
                 moveX--;
-            if(keys[0] == ControlMapping.MOVE_RIGHT.keyCode)
+            if(keys[0] == ControlMapping.MOVE_RIGHT)
                 moveX++;
-            if(keys[0] == ControlMapping.MOVE_UP.keyCode)
+            if(keys[0] == ControlMapping.MOVE_UP)
                 moveY--;
-            if(keys[0] == ControlMapping.MOVE_DOWN.keyCode)
+            if(keys[0] == ControlMapping.MOVE_DOWN)
                 moveY++;
 
-            if(keys[0] == ControlMapping.FIRE_WEAPON.keyCode)
+            if(keys[0] == ControlMapping.FIRE_WEAPON)
                 firingWeapon = true;
         }
 

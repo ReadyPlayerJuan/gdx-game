@@ -54,7 +54,7 @@ public class GameView extends View {
 
     @Override
     public void update(double delta) {
-        if(InputManager.keyPressed(ControlMapping.PAUSE_GAME.keyCode)) {
+        if(InputManager.keyPressed(ControlMapping.PAUSE_GAME)) {
             if(paused) {
                 paused = false;
                 pauseMenuView.setFocused(false);

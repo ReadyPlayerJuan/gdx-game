@@ -25,8 +25,8 @@ public class MainView extends View {
     @Override
     public void draw(SpriteBatch batch) {
         gameView.draw(batch);
-        FontManager.debugFont.setColor(0, 0, 0, 1);
-        FontManager.debugFont.draw(batch, "FPS " + Gdx.graphics.getFramesPerSecond(), 0, height);
+        FontManager.debugFont48.setColor(0, 0, 0, 1);
+        FontManager.debugFont48.draw(batch, "FPS " + Gdx.graphics.getFramesPerSecond(), 0, height);
     }
 
     @Override

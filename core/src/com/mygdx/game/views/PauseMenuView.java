@@ -1,129 +1,69 @@
 package com.mygdx.game.views;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.textures.TextureData;
-import com.mygdx.game.textures.TextureManager;
-import com.mygdx.game.ui.UI;
-import com.mygdx.game.util.Util;
+import com.badlogic.gdx.utils.Align;
+import com.mygdx.game.ui.FontManager;
+import com.mygdx.game.ui.elements.*;
 
 public class PauseMenuView extends View {
-    private UI testUI1, testUI2, testUI3, testUI4;
+    private UI parentUI;
+
+    private final Color bodyColor = makeGray(0.85f, 1);
+    private final Color borderColor = makeGray(0.60f, 1);
+    private final Color textColor = makeGray(0.95f, 1);
+    private final float cornerSize = 20f;
+
+    private static Color makeGray(float f, float a) {
+        return new Color(f, f, f, a);
+    }
 
     public PauseMenuView(View parentView, int width, int height) {
         super(parentView, width, height);
 
-        float pauseMenuMargin = 50f;
-        testUI1 = new UI(width/2, height/2, width-pauseMenuMargin*2, height-pauseMenuMargin*2, 0, 20) {
-            private NinePatch sprite;
-            private Color color;
+        parentUI = new BlankUI(width/2, height/2, width, height, 0, 50).setContentFill(true, true);
+        //BlankUI sectionButtonContainer = new BlankUI()
+        UI mainSection = new RoundedRectUI(0, 20, cornerSize, bodyColor)
+                .setBorder(2f, borderColor).addToParent(parentUI);
 
-            @Override
-            public void init() {
-                sprite = Util.createNinePatch(TextureData.ROUNDED_RECT, 30f);
 
-                color = new Color(0.7f, 0.7f, 0.7f, 1f);
-                sprite.setColor(color);
-            }
+        parentUI.format();
 
-            @Override
-            public void update(double delta) {
-                updateChildren(delta);
-            }
+        /*RoundedRectUI testUI2 = new RoundedRectUI(100, 100, 0, 0, 20, new Color(1, 1, 1, 1));
+        testUI2.setBorder(2f, new Color(0, 0, 0, 1));
 
-            @Override
-            public void draw(SpriteBatch batch) {
-                sprite.draw(batch, centerX-width/2, centerY-height/2, width, height);
-                drawChildren(batch);
-            }
+        RoundedRectUI testUI3 = new RoundedRectUI(100, 100, 0, 0, 20, new Color(1, 1, 1, 1));
+        RoundedRectButtonUI testUI4 = new RoundedRectButtonUI(100, 100, 0, 0, 20,
+                new Color(1, 1, 1, 1), new Color(0.9f, 0.9f, 0.9f, 1), new Color(0.8f, 0.8f, 0.8f, 1)) {
+            public void press(double hoverTimer, double pressTimer) { }
+            public void hold(double hoverTimer, double pressTimer) { }
+            public void release(double hoverTimer, double pressTimer) { }
+            public void mouseOver(double hoverTimer) { }
+            public void hover(double hoverTimer) { }
+            public void mouseLeave(double hoverTimer) { }
         };
+        testUI4.setBorder(2f, new Color(0, 0, 0, 1));
 
-        testUI2 = new UI(100, 100, 0, 0) {
-            private NinePatch sprite;
-            private Color color;
+        testUI5 = new TextUI(0, 0, FontManager.debugFont24, "BUTTON", Color.BLACK);
+        testUI5.setContentFit(true, true);
+        testUI5.setTextAlign(Align.center, Align.center);
 
-            @Override
-            public void init() {
-                sprite = Util.createNinePatch(TextureData.ROUNDED_RECT, 30f);
+        testUI.setVertical(false);
+        testUI.setContentAlign(UI.CENTER, UI.STRETCH);
+        //testUI.setContentAlign(UI.STRETCH, UI.CENTER);
+        testUI.addChild(testUI2);
+        testUI.addChild(testUI3);
+        testUI.addChild(testUI4);
 
-                color = new Color(1f, 1f, 1f, 1f);
-                sprite.setColor(color);
-            }
-
-            @Override
-            public void update(double delta) {
-                updateChildren(delta);
-            }
-
-            @Override
-            public void draw(SpriteBatch batch) {
-                sprite.draw(batch, centerX-width/2, centerY-height/2, width, height);
-                drawChildren(batch);
-            }
-        };
-
-        testUI3 = new UI(100, 100, 0, 0) {
-            private NinePatch sprite;
-            private Color color;
-
-            @Override
-            public void init() {
-                sprite = Util.createNinePatch(TextureData.ROUNDED_RECT, 30f);
-
-                color = new Color(1f, 1f, 1f, 1f);
-                sprite.setColor(color);
-            }
-
-            @Override
-            public void update(double delta) {
-                updateChildren(delta);
-            }
-
-            @Override
-            public void draw(SpriteBatch batch) {
-                sprite.draw(batch, centerX-width/2, centerY-height/2, width, height);
-                drawChildren(batch);
-            }
-        };
-
-        testUI4 = new UI(100, 100, 0, 0) {
-            private NinePatch sprite;
-            private Color color;
-
-            @Override
-            public void init() {
-                sprite = Util.createNinePatch(TextureData.ROUNDED_RECT, 30f);
-
-                color = new Color(1f, 1f, 1f, 1f);
-                sprite.setColor(color);
-            }
-
-            @Override
-            public void update(double delta) {
-                updateChildren(delta);
-            }
-
-            @Override
-            public void draw(SpriteBatch batch) {
-                sprite.draw(batch, centerX-width/2, centerY-height/2, width, height);
-                drawChildren(batch);
-            }
-        };
-
-        testUI1.setContentAlign(UI.STRETCH, UI.CENTER);
-        testUI1.addChild(testUI2);
-        testUI1.addChild(testUI3);
-        testUI1.addChild(testUI4);
+        testUI4.addChild(testUI5);
 
 
-        testUI1.format();
+        testUI.format();*/
     }
 
     @Override
     public void update(double delta) {
-        testUI1.update(delta);
+        parentUI.update(delta);
     }
 
     @Override
@@ -133,7 +73,7 @@ public class PauseMenuView extends View {
 
     @Override
     public void draw(SpriteBatch batch) {
-        testUI1.draw(batch);
+        parentUI.draw(batch);
     }
 
     @Override
