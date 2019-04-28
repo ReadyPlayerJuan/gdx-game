@@ -52,27 +52,7 @@ public abstract class Board {
     }
 
     public void update(double delta) {
-        /*for(Projectile p: projectiles) {
-            p.update(delta);
-        }
 
-        for(hitboxes h: hitboxes) {
-            if(h.canCollide()) {
-                for(Projectile p: projectiles) {
-                    if(p.isColliding(h)) {
-                        h.collide(p);
-                        p.collide(h);
-                    }
-                }
-            }
-        }
-
-        for(int i = 0; i < projectiles.size(); i++) {
-            if(projectiles.get(i).shouldBeDestroyed()) {
-                projectiles.remove(i);
-                i--;
-            }
-        }*/
     }
 
     public Wall[] getWalls() {

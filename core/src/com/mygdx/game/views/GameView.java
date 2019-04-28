@@ -12,9 +12,14 @@ import com.mygdx.game.entities.EntityManager;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.entities.PlayerData;
 import com.mygdx.game.entities.enemies.Dummy;
+import com.mygdx.game.input.ControlMapping;
+import com.mygdx.game.input.InputManager;
 import com.mygdx.game.weapons.guns.Pistol;
 
 public class GameView extends View {
+    private PauseMenuView pauseMenuView;
+    private boolean paused = false;
+
     private EntityManager entityManager;
     private Board board;
     private BoardCamera camera;
@@ -24,6 +29,8 @@ public class GameView extends View {
 
     public GameView(View parentView, int width, int height) {
         super(parentView, width, height);
+
+        pauseMenuView = new PauseMenuView(this, width, height);
 
         PlayerData.setEquippedWeapon(0, new Pistol());
 
@@ -47,13 +54,7 @@ public class GameView extends View {
 
     @Override
     public void update(double delta) {
-        board.update(delta);
-
-        entityManager.updateEntities(delta, board);
-
-        camera.update(delta);
-
-        /*if(InputManager.keyPressed(ControlMapping.PAUSE_GAME.keyCode)) {
+        if(InputManager.keyPressed(ControlMapping.PAUSE_GAME.keyCode)) {
             if(paused) {
                 paused = false;
                 pauseMenuView.setFocused(false);
@@ -64,11 +65,13 @@ public class GameView extends View {
             }
         }
 
-        if(!paused)
+        if(!paused) {
+            board.update(delta);
             entityManager.updateEntities(delta, board);
+            camera.update(delta);
+        }
 
-        if(!paused)
-            boardCamera.update(delta);*/
+        pauseMenuView.update(delta);
     }
 
     @Override
@@ -88,13 +91,10 @@ public class GameView extends View {
 
     @Override
     public void draw(SpriteBatch batch) {
-        //Gdx.gl.glClearColor(1, 1, 1, 1);
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.draw(gameFrameBuffer.getColorBufferTexture(), 0, 0);
-        //batch.begin();
-        //board.draw(batch);
-        //batch.end();
+
+        if(paused)
+            pauseMenuView.draw(batch);
     }
 
     @Override

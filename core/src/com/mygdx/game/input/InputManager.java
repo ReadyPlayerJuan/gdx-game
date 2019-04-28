@@ -110,6 +110,33 @@ public class InputManager implements InputProcessor {
         return releasedKeys;
     }
 
+    public static boolean keyPressed(int keycode) {
+        for(Double[] d: pressedKeys) {
+            if(d[0] == keycode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean keyHeld(int keycode) {
+        for(Double[] d: heldKeys) {
+            if(d[0] == keycode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean keyReleased(int keycode) {
+        for(Double[] d: releasedKeys) {
+            if(d[0] == keycode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static double getMouseX() {
         return mouseX;
     }

@@ -31,9 +31,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void render() {
 		float delta = Gdx.graphics.getDeltaTime();
-		InputManager.update(delta);
 
 		mainView.update(delta);
+		InputManager.update(delta);
+
 		mainView.preDraw();
 
 		Gdx.gl.glClearColor(1, 0, 0, 1);
