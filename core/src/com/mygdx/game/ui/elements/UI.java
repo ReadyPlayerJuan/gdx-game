@@ -12,8 +12,8 @@ public abstract class UI {
     public static final int BOTTOM = 4;
     public static final int STRETCH = 5;
 
-    protected float margin;
-    protected float padding;
+    protected float marginX, marginY;
+    protected float paddingX, paddingY;
     protected float centerX, centerY;
     protected float width, height;
 
@@ -25,36 +25,18 @@ public abstract class UI {
     protected int contentAlignVertical = CENTER;
     protected int contentAlignHorizontal = CENTER;
 
+    protected UI parent = null;
     protected ArrayList<UI> children;
-
-    public UI(float centerX, float centerY, float width, float height, float margin, float padding) {
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.width = width;
-        this.height = height;
-        this.margin = margin;
-        this.padding = padding;
-
-        children = new ArrayList<UI>();
-
-        init();
-    }
-
-    public UI(float width, float height, float margin, float padding) {
-        this(0, 0, width, height, margin, padding);
-    }
-
-    public UI(float margin, float padding) {
-        this(0, 0, 0, 0, margin, padding);
-    }
 
     public UI() {
         this.centerX = 0;
         this.centerY = 0;
         this.width = 0;
         this.height = 0;
-        this.margin = 0;
-        this.padding = 0;
+        this.marginX = 0;
+        this.marginY = 0;
+        this.paddingX = 0;
+        this.paddingY = 0;
 
         children = new ArrayList<UI>();
     }
@@ -73,13 +55,13 @@ public abstract class UI {
                 for(UI child2: children) {
                     maxWidth = Math.max(maxWidth, child2.getOuterWidth());
                 }
-                width = maxWidth + padding * 2;
+                width = maxWidth + paddingX * 2;
             } else {
                 float totalWidth = 0;
                 for(UI child2: children) {
                     totalWidth += child2.getOuterWidth();
                 }
-                width = totalWidth + padding * 2;
+                width = totalWidth + paddingX * 2;
             }
         }
         if(fitContentsVertical) {
@@ -88,16 +70,22 @@ public abstract class UI {
                 for(UI child2: children) {
                     maxHeight = Math.max(maxHeight, child2.getOuterHeight());
                 }
-                height = maxHeight + padding * 2;
+                height = maxHeight + paddingY * 2;
             } else {
                 float totalHeight = 0;
                 for(UI child2: children) {
                     totalHeight += child2.getOuterHeight();
                 }
-                height = totalHeight + padding * 2;
+                height = totalHeight + paddingY * 2;
             }
         }
+        child.setParent(this);
+
         return this;
+    }
+
+    public void setParent(UI parent) {
+        this.parent = parent;
     }
 
     public void format() {
@@ -105,7 +93,8 @@ public abstract class UI {
             //set child width if fill
             if(fillContentsHorizontal) {
                 for(UI child: children) {
-                    child.setWidth(getInnerWidth());
+                    if(child.getWidth() == 0)
+                        child.setWidth(getInnerWidth() - child.getMarginX()*2);
                 }
             }
 
@@ -127,13 +116,19 @@ public abstract class UI {
             //set child height if fill
             if(fillContentsVertical) {
                 float innerHeight = getInnerHeight();
+                int numUnsizedChildren = 0;
                 for(UI child: children) {
-                    innerHeight -= child.getMargin()*2;
+                    innerHeight -= child.getOuterHeight();
+                    if(child.getHeight() == 0)
+                        numUnsizedChildren++;
                 }
 
-                float childHeight = innerHeight / children.size();
-                for(UI child: children) {
-                    child.setHeight(childHeight);
+                if(numUnsizedChildren > 0) {
+                    float childHeight = innerHeight / numUnsizedChildren;
+                    for(UI child : children) {
+                        if(child.getHeight() == 0)
+                            child.setHeight(childHeight);
+                    }
                 }
             }
 
@@ -208,7 +203,8 @@ public abstract class UI {
             //set child height if fill
             if(fillContentsVertical) {
                 for(UI child: children) {
-                    child.setHeight(getInnerHeight());
+                    if(child.getHeight() == 0)
+                        child.setHeight(getInnerHeight() - child.getMarginY()*2);
                 }
             }
 
@@ -230,51 +226,64 @@ public abstract class UI {
             //set child width if fill
             if(fillContentsHorizontal) {
                 float innerWidth = getInnerWidth();
+                int numUnsizedChildren = 0;
                 for(UI child: children) {
-                    innerWidth -= child.getMargin()*2;
+                    innerWidth -= child.getOuterWidth();
+                    if(child.getWidth() == 0)
+                        numUnsizedChildren++;
                 }
 
-                float childWidth = innerWidth / children.size();
-                for(UI child: children) {
-                    child.setWidth(childWidth);
+                if(numUnsizedChildren > 0) {
+                    float childWidth = innerWidth / numUnsizedChildren;
+                    for(UI child : children) {
+                        if(child.getWidth() == 0)
+                            child.setWidth(childWidth);
+                    }
                 }
             }
 
             //set child x positions
             if(contentAlignHorizontal == RIGHT) {
                 float rightX = centerX + getInnerWidth()/2;
-                for(UI child: children) {
+                for(int i = children.size()-1; i >= 0; i--) {
+                    UI child = children.get(i);
+
                     child.setCenterX(rightX - child.getOuterWidth()/2);
                     rightX -= child.getOuterWidth();
                 }
             } else if(contentAlignHorizontal == CENTER) {
                 float totalWidth = 0;
-                for(UI child: children) {
+                for(int i = children.size()-1; i >= 0; i--) {
+                    UI child = children.get(i);
+
                     totalWidth += child.getOuterWidth();
                 }
 
                 float rightX = centerX + totalWidth/2;
-                for(UI child: children) {
+                for(int i = children.size()-1; i >= 0; i--) {
+                    UI child = children.get(i);
+
                     child.setCenterX(rightX - child.getOuterWidth()/2);
                     rightX -= child.getOuterWidth();
                 }
             } else if(contentAlignHorizontal == LEFT) {
                 float leftX = centerX - getInnerWidth()/2;
-                for(int i = children.size()-1; i >= 0; i--) {
-                    UI child = children.get(i);
+                for(UI child: children) {
                     child.setCenterX(leftX + child.getOuterWidth()/2);
                     leftX += child.getOuterWidth();
                 }
             } else if(contentAlignHorizontal == STRETCH) {
                 if(children.size() == 1) {
-                    for(UI child: children) {
+                    for(int i = children.size()-1; i >= 0; i--) {
+                        UI child = children.get(i);
+
                         child.setCenterX(centerX);
                     }
                 } else {
-                    UI right = children.get(0);
-                    UI left = children.get(children.size()-1);
+                    UI left = children.get(0);
+                    UI right = children.get(children.size()-1);
                     ArrayList<UI> mid = new ArrayList<UI>();
-                    for(int i = 1; i < children.size()-1; i++) {
+                    for(int i = children.size()-2; i >= 1; i--) {
                         mid.add(children.get(i));
                     }
 
@@ -312,7 +321,6 @@ public abstract class UI {
         }
     }
 
-    public abstract void init();
     public abstract void update(double delta);
     public abstract void draw(SpriteBatch batch);
 
@@ -360,6 +368,38 @@ public abstract class UI {
         return this;
     }
 
+    public UI setMargin(float marginX, float marginY) {
+        this.marginX = marginX;
+        this.marginY = marginY;
+        return this;
+    }
+
+    public UI setMarginX(float marginX) {
+        this.marginX = marginX;
+        return this;
+    }
+
+    public UI setMarginY(float marginY) {
+        this.marginY = marginY;
+        return this;
+    }
+
+    public UI setPadding(float paddingX, float paddingY) {
+        this.paddingX = paddingX;
+        this.paddingY = paddingY;
+        return this;
+    }
+
+    public UI setPaddingX(float paddingX) {
+        this.paddingX = paddingX;
+        return this;
+    }
+
+    public UI setPaddingY(float paddingY) {
+        this.paddingY = paddingY;
+        return this;
+    }
+
     public UI setContentAlign(int contentAlignVertical, int contentAlignHorizontal) {
         this.contentAlignVertical = contentAlignVertical;
         this.contentAlignHorizontal = contentAlignHorizontal;
@@ -383,12 +423,20 @@ public abstract class UI {
         return this;
     }
 
-    public float getMargin() {
-        return margin;
+    public float getMarginX() {
+        return marginX;
     }
 
-    public float getPadding() {
-        return padding;
+    public float getMarginY() {
+        return marginY;
+    }
+
+    public float getPaddingX() {
+        return paddingX;
+    }
+
+    public float getPaddingY() {
+        return paddingY;
     }
 
     public float getCenterX() {
@@ -408,18 +456,18 @@ public abstract class UI {
     }
 
     public float getOuterWidth() {
-        return width + margin*2;
+        return width + marginX*2;
     }
 
     public float getInnerWidth() {
-        return width - padding*2;
+        return width - paddingX*2;
     }
 
     public float getOuterHeight() {
-        return height + margin*2;
+        return height + marginY*2;
     }
 
     public float getInnerHeight() {
-        return height - padding*2;
+        return height - paddingY*2;
     }
 }

@@ -5,14 +5,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.ui.elements.*;
+import com.mygdx.game.ui.pause_menu.WeaponInfoUI;
+import com.mygdx.game.weapons.guns.Pistol;
+
+import java.awt.*;
 
 public class PauseMenuView extends View {
     private UI parentUI;
+    private SwapperUI inventoryViewSwapper;
+    private WeaponInfoUI weaponLeftInfo, weaponRightInfo;
 
-    private final Color bodyColor = makeGray(0.85f, 1);
-    private final Color borderColor = makeGray(0.60f, 1);
-    private final Color textColor = makeGray(0.95f, 1);
-    private final float cornerSize = 20f;
+    private final Color bodyColor =         makeGray(0.85f, 1);
+    private final Color darkBodyColor =     makeGray(0.75f, 1);
+    private final Color borderColor =       makeGray(0.50f, 1);
+    private final Color textColor =         makeGray(0.06f, 1);
+    private final Color buttonColor =       bodyColor;
+    private final Color buttonHoverColor =  makeGray(0.8f, 1);
+    private final Color buttonPressColor =  makeGray(0.7f, 1);
+    private final float cornerSize = 15f;
+    private final float borderSize = 2f;
 
     private static Color makeGray(float f, float a) {
         return new Color(f, f, f, a);
@@ -21,44 +32,106 @@ public class PauseMenuView extends View {
     public PauseMenuView(View parentView, int width, int height) {
         super(parentView, width, height);
 
-        parentUI = new BlankUI(width/2, height/2, width, height, 0, 50).setContentFill(true, true);
-        //BlankUI sectionButtonContainer = new BlankUI()
-        UI mainSection = new RoundedRectUI(0, 20, cornerSize, bodyColor)
-                .setBorder(2f, borderColor).addToParent(parentUI);
+        parentUI = new BlankUI()
+                .setPosition(width/2, height/2).setSize(width, height).setPadding(35, 35)
+                .setVertical(true).setContentFill(true, true);
+
+        UI sectionButtonContainer = new BlankUI()
+                .setHeight(72).setPadding(10, 0)
+                .setVertical(false).setContentFill(true, true).addToParent(parentUI);
+
+        UI sectionButton1 = new RoundedRectButtonUI(cornerSize, buttonColor, buttonHoverColor, buttonPressColor) {
+            @Override
+            public void press(double hoverTimer, double pressTimer) {
+                inventoryViewSwapper.setAllVisible(false).setViewVisible("equipment", true);
+            }
+            public void hold(double hoverTimer, double pressTimer) {}
+            public void release(double hoverTimer, double pressTimer) {}
+            public void mouseOver(double hoverTimer) {}
+            public void hover(double hoverTimer) {}
+            public void mouseLeave(double hoverTimer) {}
+        }.setBorder(borderSize, borderColor).setMargin(5, 0).setPadding(20, 20).addToParent(sectionButtonContainer);
+        UI sectionButtonText1 = new TextUI("Equipment", FontManager.aireExterior48, textColor)
+                .setTextAlign(Align.center, Align.center).addToParent(sectionButton1);
+
+        UI sectionButton2 = new RoundedRectButtonUI(cornerSize, buttonColor, buttonHoverColor, buttonPressColor) {
+            @Override
+            public void press(double hoverTimer, double pressTimer) {
+                inventoryViewSwapper.setAllVisible(false).setViewVisible("inventory", true);
+            }
+            public void hold(double hoverTimer, double pressTimer) {}
+            public void release(double hoverTimer, double pressTimer) {}
+            public void mouseOver(double hoverTimer) {}
+            public void hover(double hoverTimer) {}
+            public void mouseLeave(double hoverTimer) {}
+        }.setBorder(borderSize, borderColor).setMargin(5, 0).setPadding(20, 20).addToParent(sectionButtonContainer);
+        UI sectionButtonText2 = new TextUI("Inventory", FontManager.aireExterior48, textColor)
+                .setTextAlign(Align.center, Align.center).addToParent(sectionButton2);
+
+        UI sectionButton3 = new RoundedRectButtonUI(cornerSize, buttonColor, buttonHoverColor, buttonPressColor) {
+            @Override
+            public void press(double hoverTimer, double pressTimer) {
+                inventoryViewSwapper.setAllVisible(false).setViewVisible("upgrades", true);
+            }
+            public void hold(double hoverTimer, double pressTimer) {}
+            public void release(double hoverTimer, double pressTimer) {}
+            public void mouseOver(double hoverTimer) {}
+            public void hover(double hoverTimer) {}
+            public void mouseLeave(double hoverTimer) {}
+        }.setBorder(borderSize, borderColor).setMargin(5, 0).setPadding(20, 20).addToParent(sectionButtonContainer);
+        UI sectionButtonText3 = new TextUI("Upgrades", FontManager.aireExterior48, textColor)
+                .setTextAlign(Align.center, Align.center).addToParent(sectionButton3);
+
+
+
+        inventoryViewSwapper = new SwapperUI();
+        inventoryViewSwapper.addToParent(parentUI);
+
+
+
+        UI equipmentSection = new RoundedRectUI(cornerSize, bodyColor)
+                .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false).setContentFill(true, true);
+
+        weaponLeftInfo = new WeaponInfoUI(cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+        weaponLeftInfo.addToParent(equipmentSection);
+
+        UI weaponCenterInfo = new BlankUI()
+                .setPadding(20, 20).setMargin(60, 0).addToParent(equipmentSection);
+
+        weaponRightInfo = new WeaponInfoUI(cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+        weaponRightInfo.addToParent(equipmentSection);
+
+        weaponLeftInfo.setWeapon(new Pistol());
+        weaponRightInfo.setWeapon(new Pistol());
+
+
+
+        UI inventorySection = new RoundedRectUI(cornerSize, bodyColor)
+                .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false)
+                .setContentFill(true, true).setContentAlign(UI.CENTER, UI.CENTER);
+
+        UI inventoryTitleText = new TextUI("INVENTORY", FontManager.aireExterior48, textColor)
+                .fitText().setTextAlign(Align.center, Align.center).addToParent(inventorySection);
+
+
+
+        UI upgradesSection = new RoundedRectUI(cornerSize, bodyColor)
+                .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false)
+                .setContentFill(true, true).setContentAlign(UI.CENTER, UI.CENTER);
+
+        UI upgradesTitleText = new TextUI("UPGRADES", FontManager.aireExterior48, textColor)
+                .fitText().setTextAlign(Align.center, Align.center).addToParent(upgradesSection);
+
+
+
+        inventoryViewSwapper
+                .addChild("equipment", equipmentSection)
+                .addChild("inventory", inventorySection)
+                .addChild("upgrades", upgradesSection)
+                .setAllVisible(false).setViewVisible("equipment", true);
 
 
         parentUI.format();
-
-        /*RoundedRectUI testUI2 = new RoundedRectUI(100, 100, 0, 0, 20, new Color(1, 1, 1, 1));
-        testUI2.setBorder(2f, new Color(0, 0, 0, 1));
-
-        RoundedRectUI testUI3 = new RoundedRectUI(100, 100, 0, 0, 20, new Color(1, 1, 1, 1));
-        RoundedRectButtonUI testUI4 = new RoundedRectButtonUI(100, 100, 0, 0, 20,
-                new Color(1, 1, 1, 1), new Color(0.9f, 0.9f, 0.9f, 1), new Color(0.8f, 0.8f, 0.8f, 1)) {
-            public void press(double hoverTimer, double pressTimer) { }
-            public void hold(double hoverTimer, double pressTimer) { }
-            public void release(double hoverTimer, double pressTimer) { }
-            public void mouseOver(double hoverTimer) { }
-            public void hover(double hoverTimer) { }
-            public void mouseLeave(double hoverTimer) { }
-        };
-        testUI4.setBorder(2f, new Color(0, 0, 0, 1));
-
-        testUI5 = new TextUI(0, 0, FontManager.debugFont24, "BUTTON", Color.BLACK);
-        testUI5.setContentFit(true, true);
-        testUI5.setTextAlign(Align.center, Align.center);
-
-        testUI.setVertical(false);
-        testUI.setContentAlign(UI.CENTER, UI.STRETCH);
-        //testUI.setContentAlign(UI.STRETCH, UI.CENTER);
-        testUI.addChild(testUI2);
-        testUI.addChild(testUI3);
-        testUI.addChild(testUI4);
-
-        testUI4.addChild(testUI5);
-
-
-        testUI.format();*/
     }
 
     @Override

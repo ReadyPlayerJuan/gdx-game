@@ -18,28 +18,13 @@ public class TextUI extends UI {
     private int hAlign = Align.center;
     private int vAlign = Align.center;
 
-    public TextUI(float centerX, float centerY, float width, float height, float margin, float padding, BitmapFont font, String text, Color color) {
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.width = width;
-        this.height = height;
-        this.margin = margin;
-        this.padding = padding;
-
+    public TextUI(String text, BitmapFont font, Color color) {
+        this.text = text;
         this.font = font;
         this.color = color;
-        this.text = text;
 
         glyphLayout = new GlyphLayout();
         updateText();
-    }
-
-    public TextUI(float width, float height, float margin, float padding, BitmapFont font, String text, Color color) {
-        this(0, 0, width, height, margin, padding, font, text, color);
-    }
-
-    public TextUI(float margin, float padding, BitmapFont font, String text, Color color) {
-        this(0, 0, 0, 0, margin, padding, font, text, color);
     }
 
     public TextUI setTextAlign(int hAlign, int vAlign) {
@@ -82,6 +67,15 @@ public class TextUI extends UI {
         updateText();
     }
 
+    public TextUI fitText() {
+        updateText();
+        float textHeight = glyphLayout.height;
+        float textWidth = glyphLayout.width;
+        height = textHeight + paddingY*2;
+        width = textWidth + paddingX*2;
+        return this;
+    }
+
     public void updateText() {
         glyphLayout.setText(font, text);
         float textHeight = glyphLayout.height;
@@ -98,18 +92,13 @@ public class TextUI extends UI {
         }
 
         if(fitContentsVertical) {
-            height = textHeight + padding*2;
+            height = textHeight + paddingY*2;
         }
         if(fitContentsHorizontal) {
-            width = textWidth;
+            width = textWidth + paddingX * 2;
         }
 
         glyphLayout.setText(font, text, 0, text.length(), color, getInnerWidth(), hAlign, wrap, truncate);
-    }
-
-    @Override
-    public void init() {
-
     }
 
     @Override

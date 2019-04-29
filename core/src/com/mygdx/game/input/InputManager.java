@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 public class InputManager implements InputProcessor {
     public static InputManager inputManager;
+    public static Typeable typingTarget = null;
 
     private static LinkedList<Double[]> pressedKeys = new LinkedList<Double[]>();
     private static LinkedList<Double[]> heldKeys = new LinkedList<Double[]>();
@@ -44,6 +45,15 @@ public class InputManager implements InputProcessor {
         }
     }
 
+    public static void setTypingTarget(Typeable typeable) {
+        typingTarget = typeable;
+    }
+
+    public static void unsetTypingTarget(Typeable typeable) {
+        if(typingTarget != null && typingTarget.equals(typeable))
+            typingTarget = null;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         processKeyPress(keycode);
@@ -58,6 +68,8 @@ public class InputManager implements InputProcessor {
 
     @Override
     public boolean keyTyped(char character) {
+        if(typingTarget != null)
+            typingTarget.type(character);
         return false;
     }
 
