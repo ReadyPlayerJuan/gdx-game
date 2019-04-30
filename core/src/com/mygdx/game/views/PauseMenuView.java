@@ -7,8 +7,7 @@ import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.ui.elements.*;
 import com.mygdx.game.ui.pause_menu.WeaponInfoUI;
 import com.mygdx.game.weapons.guns.Pistol;
-
-import java.awt.*;
+import static com.mygdx.game.util.Util.makeGray;
 
 public class PauseMenuView extends View {
     private UI parentUI;
@@ -24,16 +23,17 @@ public class PauseMenuView extends View {
     private final Color buttonPressColor =  makeGray(0.7f, 1);
     private final float cornerSize = 15f;
     private final float borderSize = 2f;
-
-    private static Color makeGray(float f, float a) {
-        return new Color(f, f, f, a);
-    }
+    private final float maxWidth = 1300;
+    private final float maxHeight = 850;
 
     public PauseMenuView(View parentView, int width, int height) {
         super(parentView, width, height);
 
+        float screenPaddingX = Math.max(35, (width - maxWidth)/2);
+        float screenPaddingY = Math.max(35, (height - maxHeight)/2);
+
         parentUI = new BlankUI()
-                .setPosition(width/2, height/2).setSize(width, height).setPadding(35, 35)
+                .setPosition(width/2, height/2).setSize(width, height).setPadding(screenPaddingX, screenPaddingY)
                 .setVertical(true).setContentFill(true, true);
 
         UI sectionButtonContainer = new BlankUI()
@@ -132,6 +132,14 @@ public class PauseMenuView extends View {
 
 
         parentUI.format();
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+
+        parentUI.setVisible(focused);
+        parentUI.update(0);
     }
 
     @Override

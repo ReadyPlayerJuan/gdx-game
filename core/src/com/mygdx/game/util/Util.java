@@ -36,4 +36,8 @@ public class Util {
         sprite.setRightWidth(cornerSize);
         return sprite;
     }
+
+    public static Color makeGray(float f, float a) {
+        return new Color(f, f, f, a);
+    }
 }

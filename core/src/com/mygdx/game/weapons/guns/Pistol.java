@@ -26,13 +26,13 @@ public class Pistol extends Weapon {
             WeaponStat.WEAPON_KICK,
     };
     private static final double[][] defaultStats = new double[][] {
-            {12.0, 15.0},   //DAMAGE
-            {400, 500},     //BULLET SPEED
-            {11.0, 13.0},    //BULLET SIZE
-            {200, 250},      //BULLET KNOCKBACK
-            {0.06, 0.08},   //WEAPON SPREAD
-            {2.75, 3.25},   //WEAPON FIRE RATE
-            {150.0, 190.0},   //WEAPON KICK
+            {13.5, 3.0},     //DAMAGE
+            {450, 75},       //BULLET SPEED
+            {12.0, 1.5},     //BULLET SIZE
+            {225, 50},       //BULLET KNOCKBACK
+            {0.06, 0.02},    //WEAPON SPREAD
+            {3.00, 0.5},    //WEAPON FIRE RATE
+            {175.0, 50.0},   //WEAPON KICK
     };
 
     //inherited: protected WeaponStat[] stats;

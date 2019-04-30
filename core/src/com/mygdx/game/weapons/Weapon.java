@@ -2,6 +2,7 @@ package com.mygdx.game.weapons;
 
 import com.mygdx.game.util.Util;
 import com.mygdx.game.weapons.stats.WeaponStat;
+import com.mygdx.game.weapons.stats.WeaponStatType;
 
 public abstract class Weapon {
     protected final WeaponType type;
@@ -13,6 +14,8 @@ public abstract class Weapon {
 
     protected String statNames = "";
     protected String statValues = "";
+    protected String statBaseValues = "";
+    protected String statRolls = "";
 
     protected double[][] stats;
     protected double[] variationRolls;
@@ -28,7 +31,7 @@ public abstract class Weapon {
     protected void randomizeVariationRolls() {
         variationRolls = new double[availableStats.length];
         for(int i = 0; i < availableStats.length; i++) {
-            variationRolls[i] = Math.random();
+            variationRolls[i] = (Math.random() * 2) - 1;
         }
     }
 
@@ -36,7 +39,7 @@ public abstract class Weapon {
         stats = new double[availableStats.length][2];
 
         for(int i = 0; i < availableStats.length; i++) {
-            stats[i][0] = Util.mix(defaultStats[i][0], defaultStats[i][1], variationRolls[i]);
+            stats[i][0] = defaultStats[i][0] + (defaultStats[i][1] * variationRolls[i]);
             stats[i][1] = stats[i][0];
         }
 
@@ -56,33 +59,86 @@ public abstract class Weapon {
 
         StringBuilder valueString = new StringBuilder();
         for(int i = 0; i < availableStats.length; i++) {
-            switch(availableStats[i].getStatType()) {
-                case NUMBER:
-                    valueString.append(String.format("%.1f", stats[i][1]));
-                    break;
-                case PERCENTAGE:
-                case PERCENTAGE_BETWEEN_ZERO_AND_ONE:
-                    valueString.append(String.format("%.1f", stats[i][1] * 100)).append("%");
-                    break;
-                case TIME:
-                    valueString.append(String.format("%.1f", stats[i][1])).append("s");
-                    break;
-                case MULTIPLIER:
-                    valueString.append(String.format("%.1f", stats[i][1])).append("x");
-                    break;
-            }
+            valueString.append(formatStatString(availableStats[i].getStatType(), stats[i][1], availableStats[i].getNumDecimals(), false, true));
             valueString.append("\n");
         }
         statValues = valueString.toString();
+
+
+        StringBuilder baseValueString = new StringBuilder();
+        for(int i = 0; i < availableStats.length; i++) {
+            baseValueString.append(formatStatString(availableStats[i].getStatType(), stats[i][0], availableStats[i].getNumDecimals(), false, true));
+            baseValueString.append("\n");
+        }
+        statBaseValues = baseValueString.toString();
+
+
+        StringBuilder rollString = new StringBuilder();
+        for(int i = 0; i < availableStats.length; i++) {
+            double value = stats[i][0] - defaultStats[i][0];
+            if(value * availableStats[i].getStatBenefitSign() < 0)
+                rollString.append("[RED]");
+            else if(value * availableStats[i].getStatBenefitSign() > 0)
+                rollString.append("[FOREST]");
+
+            rollString.append(formatStatString(availableStats[i].getStatType(), value, availableStats[i].getNumDecimals(), true, true));
+            rollString.append(" (");
+            rollString.append(formatStatString(WeaponStatType.PERCENTAGE, variationRolls[i], 0, true, false));
+            rollString.append("%)[]\n");
+        }
+        statRolls = rollString.toString();
+    }
+
+    private String formatStatString(WeaponStatType type, double value, int numDecimals, boolean sign, boolean postscript) {
+        String pre = "";
+        String post = "";
+
+        if(sign && value > 0)
+            pre = "+";
+        switch(type) {
+            case PERCENTAGE:
+            case PERCENTAGE_BETWEEN_ZERO_AND_ONE:
+                value *= 100;
+                if(postscript)
+                    post = "%";
+                break;
+            case TIME:
+                if(postscript)
+                    post = "s";
+                break;
+            case MULTIPLIER:
+                if(postscript)
+                    post = "x";
+                break;
+        }
+        return pre + String.format("%." + numDecimals + "f", value) + post;
     }
 
     public String getName() {
         return name;
     }
+
     public String getStatNamesString() {
         return statNames;
     }
+
     public String getStatValuesString() {
         return statValues;
+    }
+
+    public String getStatBaseValuesString() {
+        return statBaseValues;
+    }
+
+    public String getStatRollsString() {
+        return statRolls;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public WeaponStat[] getAvailableStats() {
+        return availableStats;
     }
 }

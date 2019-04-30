@@ -16,13 +16,15 @@ public class FontManager {
 
         parameter.size = 24;
         aireExterior24 = generator.generateFont(parameter);
-        //debugFont24.getData().markupEnabled = true;
+        aireExterior24.getData().markupEnabled = true;
 
         parameter.size = 36;
         aireExterior36 = generator.generateFont(parameter);
+        aireExterior36.getData().markupEnabled = true;
 
         parameter.size = 48;
         aireExterior48 = generator.generateFont(parameter);
+        aireExterior48.getData().markupEnabled = true;
 
         generator.dispose();
     }

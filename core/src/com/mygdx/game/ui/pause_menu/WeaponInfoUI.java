@@ -3,16 +3,24 @@ package com.mygdx.game.ui.pause_menu;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
+import com.mygdx.game.input.ControlMapping;
+import com.mygdx.game.input.InputManager;
 import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.ui.elements.*;
 import com.mygdx.game.weapons.Weapon;
+import com.mygdx.game.weapons.stats.WeaponStat;
+import static com.mygdx.game.util.Util.makeGray;
 
 public class WeaponInfoUI extends UI {
     private final float verticalSpacing = 8;
     private final int weaponTitleMaxChars = 12;
 
-    private TextUI weaponInfoSubTitle, weaponTextLeft, weaponTextRight;
     private RoundedRectEditableTextUI weaponInfoTitle;
+    private TextUI weaponInfoSubTitle, weaponStatNames, weaponStatValues, weaponStatBaseValues, weaponStatRolls;
+    private UI weaponStatsButtonsContainer;
+    private SwapperUI weaponStatsRightSwapper;
+
+    private Weapon weapon = null;
 
     public WeaponInfoUI(float cornerSize, float borderSize, Color bodyColor, Color darkBodyColor, Color borderColor, Color textColor) {
         setContentFill(true, true);
@@ -25,8 +33,15 @@ public class WeaponInfoUI extends UI {
                 .setPadding(6, 6).setMargin(25, verticalSpacing).addToParent(weaponInfo);
 
         weaponInfoTitle = new RoundedRectEditableTextUI(cornerSize,
-                new Color(0, 0, 0, 0), new Color(0, 0, 0, 0.1f), new Color(0, 0, 0, 0.2f),
-                "WEAPON NAME", FontManager.aireExterior48, textColor, weaponTitleMaxChars);
+                new Color(0, 0, 0, 0), new Color(0, 0, 0, 0.15f), new Color(0, 0, 0, 0.3f),
+                "WEAPON NAME", FontManager.aireExterior48, textColor, weaponTitleMaxChars) {
+            @Override
+            public void textChanged(String newText) {
+                if(weapon != null) {
+                    weapon.setName(newText);
+                }
+            }
+        };
         weaponInfoTitle.setPadding(0, 6).setContentFit(true, false);
         weaponInfoTitle.updateText();
         weaponInfoTitle.addToParent(weaponTitleContainer);
@@ -34,36 +49,90 @@ public class WeaponInfoUI extends UI {
         weaponInfoSubTitle = new TextUI("rarity, star rating", FontManager.aireExterior24, textColor);
         weaponInfoSubTitle.fitText().setMargin(0, 2).addToParent(weaponTitleContainer);
 
-        UI weaponTextContainer = new BlankUI()
-                .setVertical(false).setContentFill(true, true).addToParent(weaponInfo);
+        SwapperUI weaponStatsContainerSwapper = new SwapperUI();
+        weaponStatsContainerSwapper.addToParent(weaponInfo);
 
-        UI weaponTextContainerLeft = new BlankUI()
-                .setPadding(10, 5).setContentFill(true, true).addToParent(weaponTextContainer);
+        UI weaponStatsContainer = new BlankUI()
+                .setVertical(false).setContentFill(true, true);//.addToParent(weaponInfo);
 
-        weaponTextLeft = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
-        weaponTextLeft.setTextAlign(Align.right, Align.top).addToParent(weaponTextContainerLeft);
+        weaponStatsButtonsContainer = new BlankUI().setPaddingY(2)
+                .setVertical(true).setContentAlign(UI.TOP, UI.CENTER).setContentFill(false, true);//.addToParent(weaponInfo);
 
-        UI weaponTextSpacer = new RoundedRectUI(0, borderColor)
-                .setWidth(2).addToParent(weaponTextContainer);
 
-        UI weaponTextContainerRight = new BlankUI()
-                .setPadding(10, 5).setContentFill(true, true).addToParent(weaponTextContainer);
+        weaponStatsContainerSwapper.addChild("stats", weaponStatsContainer).addChild("buttons", weaponStatsButtonsContainer);
+        weaponStatsContainerSwapper.setAllVisible(true);
 
-        weaponTextRight = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
-        weaponTextRight.setTextAlign(Align.left, Align.top).addToParent(weaponTextContainerRight);
+
+        UI weaponStatNamesContainerLeft = new BlankUI()
+                .setPadding(10, 5).setContentFill(true, true).addToParent(weaponStatsContainer);
+        weaponStatNames = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
+        weaponStatNames.setTextAlign(Align.right, Align.top).addToParent(weaponStatNamesContainerLeft);
+
+
+        UI weaponStatsTextSpacer = new RoundedRectUI(0, borderColor)
+                .setWidth(2).addToParent(weaponStatsContainer);
+
+
+        weaponStatsRightSwapper = new SwapperUI();
+        weaponStatsRightSwapper.addToParent(weaponStatsContainer);
+
+        UI weaponStatValuesContainer = new BlankUI()
+                .setPadding(10, 5).setContentFill(true, true);
+        weaponStatValues = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
+        weaponStatValues.setTextAlign(Align.left, Align.top).addToParent(weaponStatValuesContainer);
+
+        UI weaponStatBaseValuesContainer = new BlankUI()
+                .setPadding(10, 5).setContentFill(true, true);
+        weaponStatBaseValues = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
+        weaponStatBaseValues.setTextAlign(Align.left, Align.top).addToParent(weaponStatBaseValuesContainer);
+
+
+        UI weaponStatRollsContainer = new BlankUI()
+                .setPadding(10, 5).setContentFill(true, true);
+        weaponStatRolls = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
+        weaponStatRolls.setTextAlign(Align.right, Align.top).addToParent(weaponStatRollsContainer);
+
+
+        weaponStatsRightSwapper.addChild("values", weaponStatValuesContainer).addChild("base values", weaponStatBaseValuesContainer).addChild("rolls", weaponStatRollsContainer);
+        weaponStatsRightSwapper.setAllVisible(false).setViewVisible("values", true);
 
         UI weaponInfoSpacer = new BlankUI().setHeight(verticalSpacing).addToParent(weaponInfo);
     }
 
     public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+
         weaponInfoTitle.setText(weapon.getName()).updateText();
         //weaponInfoSubTitle.setText()
-        weaponTextLeft.setText(weapon.getStatNamesString()).updateText();
-        weaponTextRight.setText(weapon.getStatValuesString()).updateText();
+        weaponStatNames.setText(weapon.getStatNamesString()).updateText();
+        weaponStatValues.setText(weapon.getStatValuesString()).updateText();
+        weaponStatBaseValues.setText(weapon.getStatBaseValuesString()).updateText();
+        weaponStatRolls.setText(weapon.getStatRollsString()).updateText();
+
+        weaponStatsButtonsContainer.removeChildren();
+
+        for(final WeaponStat statType: weapon.getAvailableStats()) {
+            new RoundedRectButtonUI(0, makeGray(0, 0), makeGray(0, 0.15f), makeGray(0, 0.3f)) {
+                public void press(double hoverTimer, double pressTimer) {
+                    System.out.println(statType);
+                }
+                public void hold(double hoverTimer, double pressTimer) {}
+                public void release(double hoverTimer, double pressTimer) {}
+                public void mouseOver(double hoverTimer) {}
+                public void hover(double hoverTimer) {}
+                public void mouseLeave(double hoverTimer) {}
+            }.setHeight(21).addToParent(weaponStatsButtonsContainer);
+        }
     }
 
     @Override
     public void update(double delta) {
+        if(InputManager.keyHeld(ControlMapping.SHIFT)) {
+            weaponStatsRightSwapper.setAllVisible(false).setViewVisible("base values", true).setViewVisible("rolls", true);
+        } else {
+            weaponStatsRightSwapper.setAllVisible(false).setViewVisible("values", true);
+        }
+
         updateChildren(delta);
     }
 

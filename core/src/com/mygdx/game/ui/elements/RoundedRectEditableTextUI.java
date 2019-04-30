@@ -13,7 +13,7 @@ import com.mygdx.game.input.Typeable;
 import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.util.Util;
 
-public class RoundedRectEditableTextUI extends ButtonUI implements Typeable {
+public abstract class RoundedRectEditableTextUI extends ButtonUI implements Typeable {
     private BitmapFont font;
     private Color color;
     private String text;
@@ -136,26 +136,32 @@ public class RoundedRectEditableTextUI extends ButtonUI implements Typeable {
 
     @Override
     public void type(char character) {
+        boolean textChanged = false;
+
         if(("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ").indexOf(character) != -1 && text.length() < maxChars) {
             text += character;
-            updateText();
-            parent.format();
+            textChanged = true;
         } else if(character == '\b' && text.length() > 0) {
             text = text.substring(0, text.length()-1);
+            textChanged = true;
+        }
+
+        if(textChanged) {
             updateText();
             parent.format();
+            textChanged(text);
         }
     }
+
+    public abstract void textChanged(String newText);
 
     @Override
     public void update(double delta) {
         super.update(delta);
 
-        if(InputManager.keyPressed(ControlMapping.CLICK_LEFT) || InputManager.keyPressed(ControlMapping.CLICK_RIGHT)) {
-            if(hoverTimer == 0) {
-                selected = false;
-                InputManager.unsetTypingTarget(this);
-            }
+        if(!visible || ((InputManager.keyPressed(ControlMapping.CLICK_LEFT) || InputManager.keyPressed(ControlMapping.CLICK_RIGHT)) && hoverTimer == 0)) {
+            selected = false;
+            InputManager.unsetTypingTarget(this);
         }
 
         if(selected) {

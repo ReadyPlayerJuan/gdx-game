@@ -21,6 +21,20 @@ public class SwapperUI extends UI {
         return null;
     }
 
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+        if(!visible) {
+            for(Object key: views.keySet()) {
+                views.get(key).setVisible(false);
+            }
+        } else {
+            for(Object key: views.keySet()) {
+                views.get(key).setVisible(viewVisible.get(key));
+            }
+        }
+    }
+
     public SwapperUI addChild(Object key, UI child) {
         views.put(key, child);
         viewVisible.put(key, false);
@@ -29,12 +43,14 @@ public class SwapperUI extends UI {
 
     public SwapperUI setViewVisible(Object key, boolean visible) {
         viewVisible.put(key, visible);
+        views.get(key).setVisible(visible && this.visible);
         return this;
     }
 
     public SwapperUI setAllVisible(boolean visible) {
         for(Object key: views.keySet()) {
             viewVisible.put(key, visible);
+            views.get(key).setVisible(visible && this.visible);
         }
         return this;
     }

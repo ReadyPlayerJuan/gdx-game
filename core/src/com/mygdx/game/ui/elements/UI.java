@@ -25,6 +25,8 @@ public abstract class UI {
     protected int contentAlignVertical = CENTER;
     protected int contentAlignHorizontal = CENTER;
 
+    protected boolean visible = false;
+
     protected UI parent = null;
     protected ArrayList<UI> children;
 
@@ -39,6 +41,12 @@ public abstract class UI {
         this.paddingY = 0;
 
         children = new ArrayList<UI>();
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+        for(UI child: children)
+            child.setVisible(visible);
     }
 
     public UI addToParent(UI parent) {
@@ -82,6 +90,10 @@ public abstract class UI {
         child.setParent(this);
 
         return this;
+    }
+
+    public void removeChildren() {
+        children.clear();
     }
 
     public void setParent(UI parent) {
