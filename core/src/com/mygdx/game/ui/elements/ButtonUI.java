@@ -35,7 +35,7 @@ public abstract class ButtonUI extends UI {
         double mouseY = InputManager.getFlippedMouseY();
         prevHover = hover;
         prevPressed = pressed;
-        if(visible && mouseX > centerX - width/2 && mouseX <= centerX + width/2 && mouseY > centerY - height/2 && mouseY <= centerY + height/2) {
+        if(active && mouseX > centerX - width/2 && mouseX <= centerX + width/2 && mouseY > centerY - height/2 && mouseY <= centerY + height/2) {
             hover = true;
 
             if(pressable && (InputManager.keyPressed(ControlMapping.CLICK_LEFT) || (prevPressed && InputManager.keyHeld(ControlMapping.CLICK_LEFT)))) {

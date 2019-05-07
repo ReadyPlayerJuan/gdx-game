@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
 
+import java.util.HashMap;
+
 public class Util {
     public static double skewPctPow(double pct, double pow) {
         return skewPctPow(pct, pow, pow);
@@ -39,5 +41,25 @@ public class Util {
 
     public static Color makeGray(float f, float a) {
         return new Color(f, f, f, a);
+    }
+
+
+    //returns a weighted random number with an average of 1, and a distribution of y=x^weight
+    private static HashMap<Double, Double> averageValues = new HashMap<Double, Double>();
+    public static double weightedRandom(double weight) {
+        Double average = averageValues.get(weight);
+        if(average == null) {
+            average = weightedAverage(weight);
+            averageValues.put(weight, average);
+        }
+
+        return Math.pow(Math.random(), weight) / average;
+    }
+    private static double weightedAverage(double weight) {
+        double total = 0;
+        for(int i = 0; i < 10000; i++) {
+            total += Math.pow(Math.random(), weight);
+        }
+        return total / 10000;
     }
 }

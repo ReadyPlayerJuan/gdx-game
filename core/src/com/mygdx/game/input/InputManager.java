@@ -22,7 +22,6 @@ public class InputManager implements InputProcessor {
     public static void update(double delta) {
         for(Double[] d: heldKeys) {
             d[1] += delta;
-            //System.out.println(d[0] + " " + d[1]);
         }
 
         pressedKeys.clear();

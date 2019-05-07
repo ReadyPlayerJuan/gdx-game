@@ -159,7 +159,7 @@ public abstract class RoundedRectEditableTextUI extends ButtonUI implements Type
     public void update(double delta) {
         super.update(delta);
 
-        if(!visible || ((InputManager.keyPressed(ControlMapping.CLICK_LEFT) || InputManager.keyPressed(ControlMapping.CLICK_RIGHT)) && hoverTimer == 0)) {
+        if((!active && selected) || ((InputManager.keyPressed(ControlMapping.CLICK_LEFT) || InputManager.keyPressed(ControlMapping.CLICK_RIGHT)) && hoverTimer == 0)) {
             selected = false;
             InputManager.unsetTypingTarget(this);
         }

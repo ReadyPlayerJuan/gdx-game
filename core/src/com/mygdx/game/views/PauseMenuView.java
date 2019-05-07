@@ -3,16 +3,19 @@ package com.mygdx.game.views;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
+import com.mygdx.game.entities.PlayerData;
 import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.ui.elements.*;
 import com.mygdx.game.ui.pause_menu.WeaponInfoUI;
-import com.mygdx.game.weapons.guns.Pistol;
+import com.mygdx.game.ui.pause_menu.WeaponStatPopupUI;
+
 import static com.mygdx.game.util.Util.makeGray;
 
 public class PauseMenuView extends View {
     private UI parentUI;
     private SwapperUI inventoryViewSwapper;
     private WeaponInfoUI weaponLeftInfo, weaponRightInfo;
+    private WeaponStatPopupUI statPopup;
 
     private final Color bodyColor =         makeGray(0.85f, 1);
     private final Color darkBodyColor =     makeGray(0.75f, 1);
@@ -28,6 +31,9 @@ public class PauseMenuView extends View {
 
     public PauseMenuView(View parentView, int width, int height) {
         super(parentView, width, height);
+
+        statPopup = new WeaponStatPopupUI(this, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+
 
         float screenPaddingX = Math.max(35, (width - maxWidth)/2);
         float screenPaddingY = Math.max(35, (height - maxHeight)/2);
@@ -92,17 +98,14 @@ public class PauseMenuView extends View {
         UI equipmentSection = new RoundedRectUI(cornerSize, bodyColor)
                 .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false).setContentFill(true, true);
 
-        weaponLeftInfo = new WeaponInfoUI(cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+        weaponLeftInfo = new WeaponInfoUI(statPopup, 1, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
         weaponLeftInfo.addToParent(equipmentSection);
 
         UI weaponCenterInfo = new BlankUI()
                 .setPadding(20, 20).setMargin(60, 0).addToParent(equipmentSection);
 
-        weaponRightInfo = new WeaponInfoUI(cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+        weaponRightInfo = new WeaponInfoUI(statPopup, -1, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
         weaponRightInfo.addToParent(equipmentSection);
-
-        weaponLeftInfo.setWeapon(new Pistol());
-        weaponRightInfo.setWeapon(new Pistol());
 
 
 
@@ -131,6 +134,10 @@ public class PauseMenuView extends View {
                 .setAllVisible(false).setViewVisible("equipment", true);
 
 
+        weaponLeftInfo.setWeapon(PlayerData.getEquippedWeapon(0));
+        weaponRightInfo.setWeapon(PlayerData.getEquippedWeapon(1));
+
+
         parentUI.format();
     }
 
@@ -138,13 +145,18 @@ public class PauseMenuView extends View {
     public void setFocused(boolean focused) {
         super.setFocused(focused);
 
-        parentUI.setVisible(focused);
+        parentUI.setActive(focused);
         parentUI.update(0);
     }
 
     @Override
     public void update(double delta) {
         parentUI.update(delta);
+        parentUI.format();
+
+        if(statPopup.isActive()) {
+            statPopup.update(delta);
+        }
     }
 
     @Override
@@ -155,6 +167,9 @@ public class PauseMenuView extends View {
     @Override
     public void draw(SpriteBatch batch) {
         parentUI.draw(batch);
+
+        if(statPopup.isActive())
+            statPopup.draw(batch);
     }
 
     @Override

@@ -1,12 +1,14 @@
 package com.mygdx.game.weapons;
 
-import com.mygdx.game.util.Util;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.mygdx.game.textures.TextureData;
+import com.mygdx.game.textures.TextureManager;
 import com.mygdx.game.weapons.stats.WeaponStat;
 import com.mygdx.game.weapons.stats.WeaponStatType;
 
 public abstract class Weapon {
     protected final WeaponType type;
-    protected final double[] elementalWeights;
+    protected final TextureRegion texture;
     protected final WeaponStat[] availableStats;
     protected final double[][] defaultStats;
 
@@ -20,10 +22,11 @@ public abstract class Weapon {
     protected double[][] stats;
     protected double[] variationRolls;
 
-    public Weapon(WeaponType type, double[] elementalWeights, WeaponStat[] availableStats, double[][] defaultStats) {
+    public Weapon(WeaponType type, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
         this.type = type;
         this.name = type.getName();
-        this.elementalWeights = elementalWeights;
+        this.texture = TextureManager.getTextureRegion(textureSheet, textureIndex);
+        //this.elementalWeights = elementalWeights;
         this.availableStats = availableStats;
         this.defaultStats = defaultStats;
     }
@@ -42,8 +45,6 @@ public abstract class Weapon {
             stats[i][0] = defaultStats[i][0] + (defaultStats[i][1] * variationRolls[i]);
             stats[i][1] = stats[i][0];
         }
-
-        updateWeaponInfo();
     }
 
     public abstract void update(double delta, WeaponController controller);
@@ -140,5 +141,37 @@ public abstract class Weapon {
 
     public WeaponStat[] getAvailableStats() {
         return availableStats;
+    }
+
+    public WeaponType getType() {
+        return type;
+    }
+
+    public TextureRegion getTexture() {
+        return texture;
+    }
+
+    public double[][] getDefaultStats() {
+        return defaultStats;
+    }
+
+    public double[][] getStats() {
+        return stats;
+    }
+
+    public double[] getStat(WeaponStat stat) {
+        return stats[getWeaponStatIndex(stat)];
+    }
+
+    public double[] getDefaultStat(WeaponStat stat) {
+        return defaultStats[getWeaponStatIndex(stat)];
+    }
+
+    private int getWeaponStatIndex(WeaponStat stat) {
+        for(int i = 0; i < availableStats.length; i++) {
+            if(availableStats[i] == stat)
+                return i;
+        }
+        return -1;
     }
 }

@@ -109,6 +109,11 @@ public class TestProjectile extends Projectile {
     }
 
     @Override
+    public void kill() {
+        alive = false;
+    }
+
+    @Override
     public void updateSlotPositions(double slotSize) {
         slotMinX = (int)floor((x - radius) / slotSize);
         slotMaxX = (int)floor((x + radius) / slotSize);

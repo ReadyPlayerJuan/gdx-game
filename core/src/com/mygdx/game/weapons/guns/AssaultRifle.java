@@ -8,11 +8,11 @@ import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
-public class Pistol extends Weapon {
+public class AssaultRifle extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new Pistol();
+            return new AssaultRifle();
         }
     };
 
@@ -26,19 +26,19 @@ public class Pistol extends Weapon {
             WeaponStat.WEAPON_KICK,
     };
     private static final double[][] defaultStats = new double[][] {
-            {13.5, 3.0},     //DAMAGE
-            {450, 75},       //BULLET SPEED
-            {12.0, 1.5},     //BULLET SIZE
-            {225, 50},       //BULLET KNOCKBACK
-            {0.06, 0.02},    //WEAPON SPREAD
-            {3.00, 0.5},     //WEAPON FIRE RATE
-            {175.0, 50.0},   //WEAPON KICK
+            {7.0, 1.5},      //DAMAGE
+            {575, 75},       //BULLET SPEED
+            {11.0, 1.5},     //BULLET SIZE
+            {175, 50},       //BULLET KNOCKBACK
+            {0.040, 0.01},   //WEAPON SPREAD
+            {5.50, 1.25},    //WEAPON FIRE RATE
+            {125.0, 25.0},   //WEAPON KICK
     };
 
     private double fireTimer = 0;
 
-    public Pistol() {
-        super(WeaponType.PISTOL, TextureData.WEAPONS, 0, availableStats, defaultStats);
+    public AssaultRifle() {
+        super(WeaponType.ASSAULT_RIFLE, TextureData.WEAPONS, 3, availableStats, defaultStats);
 
         randomizeVariationRolls();
         initStats();

@@ -188,6 +188,11 @@ public class Player extends Entity implements WeaponController {
     }
 
     @Override
+    public void kill() {
+        health = 0;
+    }
+
+    @Override
     public void updateSlotPositions(double slotSize) {
         slotMinX = (int)floor((x - radius) / slotSize);
         slotMaxX = (int)floor((x + radius) / slotSize);

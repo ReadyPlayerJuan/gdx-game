@@ -20,9 +20,16 @@ public class WeaponInfoUI extends UI {
     private UI weaponStatsButtonsContainer;
     private SwapperUI weaponStatsRightSwapper;
 
+    private WeaponStatPopupUI statPopup;
+    private int statPopupSide;
+    private final double popupHoverDelay = 0.5;
+
     private Weapon weapon = null;
 
-    public WeaponInfoUI(float cornerSize, float borderSize, Color bodyColor, Color darkBodyColor, Color borderColor, Color textColor) {
+    public WeaponInfoUI(WeaponStatPopupUI statPopup, int statPopupSide, float cornerSize, float borderSize, Color bodyColor, Color darkBodyColor, Color borderColor, Color textColor) {
+        this.statPopup = statPopup;
+        this.statPopupSide = statPopupSide;
+
         setContentFill(true, true);
 
         UI weaponInfo = new RoundedRectUI(cornerSize, darkBodyColor)
@@ -102,26 +109,51 @@ public class WeaponInfoUI extends UI {
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
 
-        weaponInfoTitle.setText(weapon.getName()).updateText();
-        //weaponInfoSubTitle.setText()
-        weaponStatNames.setText(weapon.getStatNamesString()).updateText();
-        weaponStatValues.setText(weapon.getStatValuesString()).updateText();
-        weaponStatBaseValues.setText(weapon.getStatBaseValuesString()).updateText();
-        weaponStatRolls.setText(weapon.getStatRollsString()).updateText();
+        if(weapon != null) {
+            weaponInfoTitle.setText(weapon.getName()).updateText();
+            //weaponInfoSubTitle.setText()
+            weaponStatNames.setText(weapon.getStatNamesString()).updateText();
+            weaponStatValues.setText(weapon.getStatValuesString()).updateText();
+            weaponStatBaseValues.setText(weapon.getStatBaseValuesString()).updateText();
+            weaponStatRolls.setText(weapon.getStatRollsString()).updateText();
 
-        weaponStatsButtonsContainer.removeChildren();
+            weaponStatsButtonsContainer.removeChildren();
 
-        for(final WeaponStat statType: weapon.getAvailableStats()) {
-            new RoundedRectButtonUI(0, makeGray(0, 0), makeGray(0, 0.15f), makeGray(0, 0.3f)) {
-                public void press(double hoverTimer, double pressTimer) {
-                    System.out.println(statType);
-                }
-                public void hold(double hoverTimer, double pressTimer) {}
-                public void release(double hoverTimer, double pressTimer) {}
-                public void mouseOver(double hoverTimer) {}
-                public void hover(double hoverTimer) {}
-                public void mouseLeave(double hoverTimer) {}
-            }.setHeight(21).addToParent(weaponStatsButtonsContainer);
+            for(final WeaponStat statType: weapon.getAvailableStats()) {
+                final Weapon w = weapon;
+                new RoundedRectButtonUI(0, makeGray(0, 0), makeGray(0, 0.15f), makeGray(0, 0.15f)) {
+                    public void press(double hoverTimer, double pressTimer) {
+                        if(!statPopup.isActive()) {
+                            showPopup();
+                        }
+                    }
+                    public void hold(double hoverTimer, double pressTimer) {}
+                    public void release(double hoverTimer, double pressTimer) {}
+                    public void mouseOver(double hoverTimer) {}
+                    public void hover(double hoverTimer) {
+                        if(!statPopup.isActive() && hoverTimer > popupHoverDelay) {
+                            showPopup();
+                        }
+                    }
+                    public void mouseLeave(double hoverTimer) {
+                        if(statPopup.isActive() && statPopup.getStatType() == statType) {
+                            statPopup.hide();
+                        }
+                    }
+                    private void showPopup() {
+                        statPopup.show(w, statType, getCenterX() + statPopupSide * getOuterWidth()/2, getCenterY() + getOuterHeight()/2, statPopupSide, -1);
+                    }
+                }.setHeight(21).addToParent(weaponStatsButtonsContainer);
+            }
+        } else {
+            weaponInfoTitle.setText("").updateText();
+            //weaponInfoSubTitle.setText()
+            weaponStatNames.setText("").updateText();
+            weaponStatValues.setText("").updateText();
+            weaponStatBaseValues.setText("").updateText();
+            weaponStatRolls.setText("").updateText();
+
+            weaponStatsButtonsContainer.removeChildren();
         }
     }
 

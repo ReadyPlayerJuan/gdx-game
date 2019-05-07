@@ -3,7 +3,8 @@ package com.mygdx.game.textures;
 public enum TextureData {
     TEST_IMAGE ("badlogic.jpg"),
     PLAYER_SHEET ("test_sprite_1.png", 2, 2),
-    ROUNDED_RECT ("rounded_rect.png");
+    ROUNDED_RECT ("rounded_rect.png"),
+    WEAPONS ("weapons.png", 2, 2);
 
     private String fileName;
     private int sheetRows, sheetCols;

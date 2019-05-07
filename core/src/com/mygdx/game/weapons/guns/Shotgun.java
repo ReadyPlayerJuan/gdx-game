@@ -8,16 +8,17 @@ import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
-public class Pistol extends Weapon {
+public class Shotgun extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new Pistol();
+            return new Shotgun();
         }
     };
 
     private static final WeaponStat[] availableStats = new WeaponStat[] {
             WeaponStat.BULLET_DAMAGE,
+            WeaponStat.BULLET_NUM,
             WeaponStat.BULLET_SPEED,
             WeaponStat.BULLET_SIZE,
             WeaponStat.BULLET_KNOCKBACK,
@@ -26,19 +27,21 @@ public class Pistol extends Weapon {
             WeaponStat.WEAPON_KICK,
     };
     private static final double[][] defaultStats = new double[][] {
-            {13.5, 3.0},     //DAMAGE
-            {450, 75},       //BULLET SPEED
-            {12.0, 1.5},     //BULLET SIZE
-            {225, 50},       //BULLET KNOCKBACK
-            {0.06, 0.02},    //WEAPON SPREAD
-            {3.00, 0.5},     //WEAPON FIRE RATE
-            {175.0, 50.0},   //WEAPON KICK
+            {7.0, 1.5},      //DAMAGE
+            {4.5, 1.0},      //BULLET NUM
+            {500, 75},       //BULLET SPEED
+            {10.0, 1.2},     //BULLET SIZE
+            {100, 20},       //BULLET KNOCKBACK
+            {0.08, 0.02},    //WEAPON SPREAD
+            {1.20, 0.3},     //WEAPON FIRE RATE
+            {375.0, 75.0},   //WEAPON KICK
     };
+    private static final double BULLET_SPEED_VARIATION = 0.1;
 
     private double fireTimer = 0;
 
-    public Pistol() {
-        super(WeaponType.PISTOL, TextureData.WEAPONS, 0, availableStats, defaultStats);
+    public Shotgun() {
+        super(WeaponType.SHOTGUN, TextureData.WEAPONS, 2, availableStats, defaultStats);
 
         randomizeVariationRolls();
         initStats();
@@ -51,12 +54,13 @@ public class Pistol extends Weapon {
         //boolean prevFiring = controller.wasFiringWeapon();
 
         //System.out.println(fireTimer);
-        double fireTime = 1.0 / stats[5][1];
+        double fireTime = 1.0 / stats[6][1];
         if(firing) {
             fireTimer += delta;
 
             while(fireTimer >= fireTime) {
                 fireTimer -= fireTime;
+
                 fire(delta, controller);
             }
         } else {
@@ -66,16 +70,24 @@ public class Pistol extends Weapon {
 
     protected void fire(double delta, WeaponController controller) {
         double angle = Math.atan2(controller.getTargetY(), controller.getTargetX());
-        double variedAngle = angle + Math.toRadians(180) * stats[4][1] * Math.random() * Math.signum(Math.random()-0.5); //add angle variation
+        double maxAngleVariation = Math.toRadians(180) * stats[5][1];
 
-        controller.kick(angle + Math.PI, stats[6][1]);
+        int numBullets = (int)(stats[1][1] + Math.random());
+        double individualAngleVariation = maxAngleVariation * (1.0 / numBullets+1);
 
-        new TestProjectile(controller, this, TextureData.PLAYER_SHEET,
-                controller.getX(), controller.getY(),
-                stats[0][1],   //damage
-                stats[1][1],   //speed
-                variedAngle,   //angle
-                stats[2][1],   //bullet radius
-                stats[3][1]);  //knockback
+        controller.kick(angle + Math.PI, stats[7][1]);
+
+
+        for(int i = 0; i < numBullets; i++) {
+            double variedAngle = angle - maxAngleVariation + individualAngleVariation*i * Math.random() * individualAngleVariation;
+
+            new TestProjectile(controller, this, TextureData.PLAYER_SHEET,
+                    controller.getX(), controller.getY(),
+                    stats[0][1],   //damage
+                    stats[2][1] * ((((Math.random() * 2) - 1) * BULLET_SPEED_VARIATION) + 1),   //speed
+                    variedAngle,   //angle
+                    stats[3][1],   //bullet radius
+                    stats[4][1]);  //knockback
+        }
     }
 }

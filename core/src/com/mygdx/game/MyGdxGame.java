@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.textures.TextureManager;
 import com.mygdx.game.ui.FontManager;
@@ -33,6 +34,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		float delta = Gdx.graphics.getDeltaTime();
 
 		mainView.update(delta);
+		if(InputManager.keyPressed(ControlMapping.ESCAPE))
+			Gdx.app.exit();
 		InputManager.update(delta);
 
 		mainView.preDraw();

@@ -25,7 +25,7 @@ public abstract class UI {
     protected int contentAlignVertical = CENTER;
     protected int contentAlignHorizontal = CENTER;
 
-    protected boolean visible = false;
+    protected boolean active = false;
 
     protected UI parent = null;
     protected ArrayList<UI> children;
@@ -43,10 +43,10 @@ public abstract class UI {
         children = new ArrayList<UI>();
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setActive(boolean active) {
+        this.active = active;
         for(UI child: children)
-            child.setVisible(visible);
+            child.setActive(active);
     }
 
     public UI addToParent(UI parent) {
@@ -433,6 +433,10 @@ public abstract class UI {
     public UI setVertical(boolean vertical) {
         this.vertical = vertical;
         return this;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     public float getMarginX() {

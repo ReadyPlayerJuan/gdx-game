@@ -35,6 +35,7 @@ public abstract class Entity extends Slottable {
     public abstract void eventTerrainCollision(double angle);
 
     public abstract boolean isAlive();
+    public abstract void kill();
 
     public BodyHitbox[] getBodyHitboxes() {
         return bodyHitboxes;

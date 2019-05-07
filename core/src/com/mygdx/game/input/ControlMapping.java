@@ -6,6 +6,7 @@ public class ControlMapping {
     public static int TAB = 61;
     public static int SHIFT = 59;
     public static int CONTROL = 129;
+    public static int ESCAPE = 131;
 
     public static int MOVE_LEFT = 29;
     public static int MOVE_RIGHT = 32;

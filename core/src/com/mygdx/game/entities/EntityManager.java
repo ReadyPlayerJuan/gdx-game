@@ -58,7 +58,7 @@ public class EntityManager {
         hitboxCollisionEventManager = new CellEventManager<BodyHitbox, DamagerHitbox>() {
             @Override
             public void event(BodyHitbox item1, DamagerHitbox item2) {
-                if(item1.getOwner().isAlive() && item2.getOwner().isAlive() && item2.overlapping(item1)) {
+                if(item1.getOwner().isAlive() && item2.getOwner().isAlive() && item2.overlapping(item1) && item1.isDamageable()) {
                     item2.damage(item1);
                 }
             }
@@ -66,7 +66,7 @@ public class EntityManager {
         hitboxPushCollisionEventManager = new CellEventManager<BodyHitbox, BodyHitbox>() {
             @Override
             public void event(BodyHitbox item1, BodyHitbox item2) {
-                if(!item1.equals(item2) && item1.getOwner().isAlive() && item2.getOwner().isAlive() && item2.overlapping(item1)) {
+                if(!item1.equals(item2) && item1.getOwner().isAlive() && item2.getOwner().isAlive() && item2.overlapping(item1) && item1.isPushable() && item2.isPushable()) {
                     item1.getPushedBy(item2);
                     item2.getPushedBy(item1);
                 }
@@ -96,14 +96,14 @@ public class EntityManager {
             Entity e = playerEntities.get(i);
             e.updatePost(delta);
             if(!e.isAlive()) {
-                playerEntities.remove(i--);
+                playerEntities.remove(i--).kill();
             }
         }
         for(int i = 0; i < enemyEntities.size(); i++) {
             Entity e = enemyEntities.get(i);
             e.updatePost(delta);
             if(!e.isAlive()) {
-                enemyEntities.remove(i--);
+                enemyEntities.remove(i--).kill();
             }
         }
 

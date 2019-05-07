@@ -1,49 +1,55 @@
 package com.mygdx.game.entities.enemies;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.entities.Entity;
 import com.mygdx.game.entities.Team;
 import com.mygdx.game.entities.hitboxes.BodyHitbox;
-import com.mygdx.game.textures.TextureData;
-import com.mygdx.game.textures.TextureManager;
 import com.mygdx.game.util.Util;
+import com.mygdx.game.weapons.Weapon;
 
 import static java.lang.Math.*;
-import static java.lang.Math.abs;
+import static java.lang.Math.sin;
 
-public class Dummy extends Enemy {
-    private Animation<TextureRegion> idleAnimation;
-    private float animationTimer = 0;
+public class WeaponDrop extends Entity {
+    private final Weapon weapon;
+    private boolean pickedUp = false;
 
     private BodyHitbox hitbox;
-
-    private final double maxHealth = 30;
-    private double health = maxHealth;
-    private double radius = 20;
-    private double accel = 1500;
-    private double friction = 1.0;
+    private double radius = 10;
+    private double accel = 900;
+    private double friction = 0.25;
 
     private double maxPushSpeed = 200;
     private double pushVelX = 0;
     private double pushVelY = 0;
 
-    public Dummy(double x, double y) {
-        super(Team.ENEMY, 0, 1, x, y);
+    private double spriteAngle;
+    private double rotationSpeed;
+    private final double spriteScale = 5.5;
+    private final double glowScale = spriteScale * 2.0;
+
+    public WeaponDrop(Weapon weapon, double x, double y) {
+        super(Team.PLAYER, x, y);
+        this.weapon = weapon;
+
+        spriteAngle = (Math.random() * 2 * Math.PI) - Math.PI;
+        rotationSpeed = Util.mix(0.01, 0.04, Math.random());
+
+        double angle = Math.random() * 2 * Math.PI;
+        this.x += radius * Math.cos(angle);
+        this.y += radius * Math.sin(angle);
+        double launchSpeed = Util.mix(150, 300, Math.random());
+        xVel = launchSpeed * Math.cos(angle);
+        yVel = launchSpeed * Math.sin(angle);
 
         terrainCollisionRadius = radius;
-
-        idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
-        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new BodyHitbox(this, team, radius) {
             @Override
             public void takeDamage(double damage, double knockback, double knockbackAngle) {
-                health -= damage;
-                //System.out.println("health: " + health);
-                xVel += knockback * Math.cos(knockbackAngle);
-                yVel += knockback * Math.sin(knockbackAngle);
+                //xVel += knockback * Math.cos(knockbackAngle);
+                //yVel += knockback * Math.sin(knockbackAngle);
             }
 
             @Override
@@ -59,6 +65,7 @@ public class Dummy extends Enemy {
                 pushVelY -= maxPushSpeed * pushPct * normalY;
             }
         };
+        hitbox.setDamageable(false);
         hitbox.setPosition(x, y);
 
         bodyHitboxes = new BodyHitbox[] {hitbox};
@@ -74,7 +81,6 @@ public class Dummy extends Enemy {
         xVel = vel * cos(angle);
         yVel = vel * sin(angle);
 
-
         //set next position for collision detection
         nextX = x + (xVel + pushVelX) * delta;
         nextY = y + (yVel + pushVelY) * delta;
@@ -88,23 +94,40 @@ public class Dummy extends Enemy {
         x = nextX;
         y = nextY;
 
-        animationTimer += (float)delta;
+        spriteAngle = Math.signum(spriteAngle) * (Math.abs(spriteAngle) + (Math.hypot(xVel, yVel)) * rotationSpeed);
 
         hitbox.setPosition(x, y);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.draw(idleAnimation.getKeyFrame(animationTimer),
+        int numGlowLayers = 6;
+
+        batch.setColor(1, 1, 1, (1.0f / numGlowLayers));
+        for(double i = 0; i < 1; i += (1.0 / numGlowLayers)) {
+            batch.draw(weapon.getTexture(),
+                    (float)(x-radius),
+                    (float)(y-radius),
+                    (float)radius,
+                    (float)radius,
+                    (float)radius*2,
+                    (float)radius*2,
+                    (float)Util.mix(glowScale, spriteScale, i),
+                    (float)Util.mix(glowScale, spriteScale, i),
+                    (float)spriteAngle);
+        }
+
+        batch.setColor(Color.BLACK);
+        batch.draw(weapon.getTexture(),
                 (float)(x-radius),
                 (float)(y-radius),
                 (float)radius,
                 (float)radius,
                 (float)radius*2,
                 (float)radius*2,
-                1f,
-                1f,
-                0);
+                (float)spriteScale,
+                (float)spriteScale,
+                (float)spriteAngle);
     }
 
     @Override
@@ -114,13 +137,12 @@ public class Dummy extends Enemy {
 
     @Override
     public boolean isAlive() {
-        return health > 0;
+        return !pickedUp;
     }
 
     @Override
     public void kill() {
-        health = 0;
-        dropLoot();
+        pickedUp = true;
     }
 
     @Override

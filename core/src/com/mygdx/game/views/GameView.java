@@ -14,6 +14,7 @@ import com.mygdx.game.entities.PlayerData;
 import com.mygdx.game.entities.enemies.Dummy;
 import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
+import com.mygdx.game.weapons.WeaponType;
 import com.mygdx.game.weapons.guns.Pistol;
 
 public class GameView extends View {
@@ -30,9 +31,10 @@ public class GameView extends View {
     public GameView(View parentView, int width, int height) {
         super(parentView, width, height);
 
-        pauseMenuView = new PauseMenuView(this, width, height);
+        PlayerData.setEquippedWeapon(0, WeaponType.generateRandomWeapon());
+        PlayerData.setEquippedWeapon(1, WeaponType.generateRandomWeapon());
 
-        PlayerData.setEquippedWeapon(0, new Pistol());
+        pauseMenuView = new PauseMenuView(this, width, height);
 
         entityManager = new EntityManager();
         board = new BoardPreset1(this);
@@ -77,7 +79,7 @@ public class GameView extends View {
     @Override
     public void preDraw() {
         gameFrameBuffer.bind();
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(1f, 1f, 1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
