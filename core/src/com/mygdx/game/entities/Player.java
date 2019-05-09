@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import static java.lang.Math.*;
 
 public class Player extends Entity implements WeaponController {
-    private Animation<TextureRegion> idleAnimation;
+    private TextureRegion squareTexture, triangleTexture, circleTexture;
     private float animationTimer = 0;
 
     private BodyHitbox hitbox;
@@ -44,8 +44,11 @@ public class Player extends Entity implements WeaponController {
         super(Team.PLAYER);
         terrainCollisionRadius = radius;
 
-        idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
-        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        squareTexture = TextureManager.getTextureRegion(TextureData.SHAPES, 7);
+        triangleTexture = TextureManager.getTextureRegion(TextureData.SHAPES, 16 + 4);
+        circleTexture = TextureManager.getTextureRegion(TextureData.SHAPES, 32 + 0);
+        //idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
+        //idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new BodyHitbox(this, team, radius) {
             @Override
@@ -159,16 +162,53 @@ public class Player extends Entity implements WeaponController {
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.draw(idleAnimation.getKeyFrame(animationTimer),
-                (float)(x-radius),
-                (float)(y-radius),
-                (float)radius,
-                (float)radius,
-                (float)radius*2,
-                (float)radius*2,
+        float circlePulsePeriod = 2.5f;
+        float circlePulseAmount = 0.05f;
+        float trianglePulsePeriod = 2.5f;
+        float trianglePulseAmount = 0.05f;
+        float squarePulsePeriod = 2.5f;
+        float squarePulseAmount = 0.12f;
+        float triangleRotationPeriod = 0.16f;
+        float squareRotationPeriod = -0.2f;
+
+        float circleRadius = (float)radius * 1.05f * (1.0f + (circlePulseAmount * (float)Math.sin((animationTimer * Math.PI * 2) / circlePulsePeriod + ((0 / 3.0) * Math.PI * 2))));
+        batch.setColor(Util.makeGray(0.4f, 1.0f));
+        batch.draw(circleTexture,
+                (float)(x-circleRadius),
+                (float)(y-circleRadius),
+                circleRadius,
+                circleRadius,
+                circleRadius*2,
+                circleRadius*2,
                 1f,
                 1f,
                 0);
+
+        float triangleRadius = (float)radius * 1.35f * (1.0f + (trianglePulseAmount * (float)Math.sin((animationTimer * Math.PI * 2) / trianglePulsePeriod + ((1 / 3.0) * Math.PI * 2))));
+        batch.setColor(Util.makeGray(0.65f, 1.0f));
+        batch.draw(triangleTexture,
+                (float)(x-triangleRadius),
+                (float)(y-triangleRadius),
+                triangleRadius,
+                triangleRadius,
+                triangleRadius*2,
+                triangleRadius*2,
+                1f,
+                1f,
+                (float)(animationTimer * Math.PI * 2) / triangleRotationPeriod);
+
+        float squareRadius = (float)radius * 0.65f * (1.0f + (squarePulseAmount * (float)Math.sin((animationTimer * Math.PI * 2) / squarePulsePeriod + ((2 / 3.0) * Math.PI * 2))));
+        batch.setColor(Util.makeGray(0.9f, 1.0f));
+        batch.draw(squareTexture,
+                (float)(x-squareRadius),
+                (float)(y-squareRadius),
+                squareRadius,
+                squareRadius,
+                squareRadius*2,
+                squareRadius*2,
+                1f,
+                1f,
+                (float)(animationTimer * Math.PI * 2) / squareRotationPeriod);
 
         //sprite.draw(batch);
     }

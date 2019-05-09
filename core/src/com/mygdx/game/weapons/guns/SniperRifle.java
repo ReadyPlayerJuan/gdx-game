@@ -6,39 +6,44 @@ import com.mygdx.game.weapons.Weapon;
 import com.mygdx.game.weapons.WeaponController;
 import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
+import com.mygdx.game.weapons.stats.WeaponRarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
 public class SniperRifle extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new SniperRifle();
+            return new SniperRifle(WeaponRarity.values()[(int)(Math.random() * WeaponRarity.values().length)]);
         }
     };
 
-    private static final WeaponStat[] availableStats = new WeaponStat[] {
-            WeaponStat.BULLET_DAMAGE,
-            WeaponStat.BULLET_SPEED,
-            WeaponStat.BULLET_SIZE,
-            WeaponStat.BULLET_KNOCKBACK,
-            WeaponStat.WEAPON_SPREAD,
-            WeaponStat.WEAPON_FIRE_RATE,
-            WeaponStat.WEAPON_KICK,
-    };
-    private static final double[][] defaultStats = new double[][] {
-            {26.0, 6.0},     //DAMAGE
-            {950, 150},      //BULLET SPEED
-            {11.0, 1.0},     //BULLET SIZE
-            {400, 75},       //BULLET KNOCKBACK
-            {0.04, 0.015},   //WEAPON SPREAD
-            {1.10, 0.40},    //WEAPON FIRE RATE
-            {400, 75},       //WEAPON KICK
-    };
+    private static WeaponStat[] availableStats() {
+        return new WeaponStat[] {
+                WeaponStat.BULLET_DAMAGE,
+                WeaponStat.BULLET_SPEED,
+                WeaponStat.BULLET_SIZE,
+                WeaponStat.BULLET_KNOCKBACK,
+                WeaponStat.WEAPON_SPREAD,
+                WeaponStat.WEAPON_FIRE_RATE,
+                WeaponStat.WEAPON_KICK,
+        };
+    }
+    private static double[][] defaultStats() {
+        return new double[][] {
+                {26.0, 6.0},     //DAMAGE
+                {950, 150},      //BULLET SPEED
+                {11.0, 1.0},     //BULLET SIZE
+                {400, 75},       //BULLET KNOCKBACK
+                {0.04, 0.015},   //WEAPON SPREAD
+                {1.10, 0.40},    //WEAPON FIRE RATE
+                {400, 75},       //WEAPON KICK
+        };
+    }
 
     private double fireTimer = 0;
 
-    public SniperRifle() {
-        super(WeaponType.SNIPER_RIFLE, TextureData.WEAPONS, 1, availableStats, defaultStats);
+    public SniperRifle(WeaponRarity rarity) {
+        super(WeaponType.SNIPER_RIFLE, rarity, TextureData.WEAPONS, 1, availableStats(), defaultStats());
 
         randomizeVariationRolls();
         initStats();
@@ -70,7 +75,7 @@ public class SniperRifle extends Weapon {
 
         controller.kick(angle + Math.PI, stats[6][1]);
 
-        new TestProjectile(controller, this, TextureData.PLAYER_SHEET,
+        new TestProjectile(controller, this, null,//TextureData.PLAYER_SHEET,
                 controller.getX(), controller.getY(),
                 stats[0][1],   //damage
                 stats[1][1],   //speed

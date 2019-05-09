@@ -1,8 +1,10 @@
 package com.mygdx.game.ui.elements;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
+import com.mygdx.game.ui.graphic_types.GraphicType;
 
 public abstract class ButtonUI extends UI {
     protected Color defaultColor, hoverColor, pressColor;
@@ -14,10 +16,11 @@ public abstract class ButtonUI extends UI {
     protected Color currentColor;
     protected boolean pressable = true;
 
-    public ButtonUI(Color defaultColor, Color hoverColor, Color pressColor) {
+    public ButtonUI(Color defaultColor, Color hoverColor, Color pressColor, GraphicType graphicType) {
         this.defaultColor = defaultColor;
         this.hoverColor = hoverColor;
         this.pressColor = pressColor;
+        this.graphicType = graphicType;
 
         currentColor = defaultColor;
     }
@@ -78,6 +81,12 @@ public abstract class ButtonUI extends UI {
             currentColor = hoverColor;
         else
             currentColor = defaultColor;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        graphicType.setColor(currentColor).draw(batch, centerX, centerY, width, height);
+        drawChildren(batch);
     }
 
     public abstract void press(double hoverTimer, double pressTimer);

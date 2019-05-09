@@ -12,7 +12,7 @@ import com.mygdx.game.weapons.stats.WeaponStat;
 import static com.mygdx.game.util.Util.makeGray;
 
 public class WeaponInfoUI extends UI {
-    private final float verticalSpacing = 8;
+    /*private final float verticalSpacing = 8;
     private final int weaponTitleMaxChars = 12;
 
     private RoundedRectEditableTextUI weaponInfoTitle;
@@ -171,5 +171,5 @@ public class WeaponInfoUI extends UI {
     @Override
     public void draw(SpriteBatch batch) {
         drawChildren(batch);
-    }
+    }*/
 }

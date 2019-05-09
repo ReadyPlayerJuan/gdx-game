@@ -14,6 +14,10 @@ public class TextUI extends UI {
     private String truncate = null;
     private boolean wrap = false;
 
+    private Color shadowColor;
+    private float shadowOffsetX, shadowOffsetY;
+    private GlyphLayout shadowGlyphLayout;
+
     private float textX, textY;
     private int hAlign = Align.center;
     private int vAlign = Align.center;
@@ -22,9 +26,17 @@ public class TextUI extends UI {
         this.text = text;
         this.font = font;
         this.color = color;
-
         glyphLayout = new GlyphLayout();
         updateText();
+    }
+
+    public TextUI setShadow(Color shadowColor, float shadowOffsetX, float shadowOffsetY) {
+        this.shadowColor = shadowColor;
+        this.shadowOffsetX = shadowOffsetX;
+        this.shadowOffsetY = shadowOffsetY;
+        shadowGlyphLayout = new GlyphLayout();
+        updateText();
+        return this;
     }
 
     public TextUI setTextAlign(int hAlign, int vAlign) {
@@ -99,6 +111,8 @@ public class TextUI extends UI {
         }
 
         glyphLayout.setText(font, text, 0, text.length(), color, getInnerWidth(), hAlign, wrap, truncate);
+        if(shadowColor != null)
+            shadowGlyphLayout.setText(font, text, 0, text.length(), shadowColor, getInnerWidth(), hAlign, wrap, truncate);
     }
 
     @Override
@@ -108,7 +122,9 @@ public class TextUI extends UI {
 
     @Override
     public void draw(SpriteBatch batch) {
-        //System.out.println(width + " " + height);
+        graphicType.draw(batch, centerX, centerY, width, height);
+        if(shadowColor != null)
+            font.draw(batch, shadowGlyphLayout, textX + shadowOffsetX, textY + shadowOffsetY);
         font.draw(batch, glyphLayout, textX, textY);
         drawChildren(batch);
     }

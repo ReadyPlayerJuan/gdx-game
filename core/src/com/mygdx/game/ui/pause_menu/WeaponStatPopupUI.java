@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.ui.FontManager;
-import com.mygdx.game.ui.elements.BlankUI;
-import com.mygdx.game.ui.elements.RoundedRectUI;
 import com.mygdx.game.ui.elements.TextUI;
 import com.mygdx.game.ui.elements.UI;
 import com.mygdx.game.views.View;
@@ -17,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WeaponStatPopupUI extends UI {
-    private View view;
+    /*private View view;
     private boolean hover = false;
 
     private UI frame, titleBox, descriptionBox, baseValueContainer;
@@ -169,5 +167,5 @@ public class WeaponStatPopupUI extends UI {
 
     public WeaponStat getStatType() {
         return statType;
-    }
+    }*/
 }

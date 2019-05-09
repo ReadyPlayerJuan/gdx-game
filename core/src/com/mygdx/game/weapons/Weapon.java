@@ -3,14 +3,18 @@ package com.mygdx.game.weapons;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
+import com.mygdx.game.weapons.stats.WeaponRarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 import com.mygdx.game.weapons.stats.WeaponStatType;
 
 public abstract class Weapon {
-    protected final WeaponType type;
-    protected final TextureRegion texture;
-    protected final WeaponStat[] availableStats;
-    protected final double[][] defaultStats;
+    protected WeaponType type;
+    protected WeaponRarity rarity;
+    protected TextureRegion texture;
+    protected WeaponStat[] availableStats;
+    protected double[][] defaultStats;
+    protected double[][] stats;
+    protected double[] variationRolls;
 
     protected String name;
 
@@ -19,11 +23,9 @@ public abstract class Weapon {
     protected String statBaseValues = "";
     protected String statRolls = "";
 
-    protected double[][] stats;
-    protected double[] variationRolls;
-
-    public Weapon(WeaponType type, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
+    public Weapon(WeaponType type, WeaponRarity rarity, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
         this.type = type;
+        this.rarity = rarity;
         this.name = type.getName();
         this.texture = TextureManager.getTextureRegion(textureSheet, textureIndex);
         //this.elementalWeights = elementalWeights;
@@ -39,6 +41,13 @@ public abstract class Weapon {
     }
 
     protected void initStats() {
+        double multiplier = rarity.getStatMultiplier();
+        for(double[] d: defaultStats) {
+            for(int i = 0; i < d.length; i++) {
+                d[i] *= multiplier;
+            }
+        }
+
         stats = new double[availableStats.length][2];
 
         for(int i = 0; i < availableStats.length; i++) {
@@ -145,6 +154,10 @@ public abstract class Weapon {
 
     public WeaponType getType() {
         return type;
+    }
+
+    public WeaponRarity getRarity() {
+        return rarity;
     }
 
     public TextureRegion getTexture() {

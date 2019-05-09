@@ -14,7 +14,7 @@ import com.mygdx.game.weapons.WeaponController;
 import static java.lang.Math.floor;
 
 public class TestProjectile extends Projectile {
-    private Animation<TextureRegion> animation;
+    //private Animation<TextureRegion> animation;
     private float animationTimer = 0;
 
     private DamagerHitbox hitbox;
@@ -48,8 +48,8 @@ public class TestProjectile extends Projectile {
         this.knockback = kbck;
         this.terrainCollisionRadius = radius;
 
-        animation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
-        animation.setPlayMode(Animation.PlayMode.LOOP);
+        //animation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
+        //animation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new DamagerHitbox(this, team, radius) {
             @Override
@@ -86,7 +86,7 @@ public class TestProjectile extends Projectile {
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.draw(animation.getKeyFrame(animationTimer),
+        /*batch.draw(animation.getKeyFrame(animationTimer),
                 (float)(x-radius),
                 (float)(y-radius),
                 (float)radius,
@@ -95,7 +95,7 @@ public class TestProjectile extends Projectile {
                 (float)radius*2,
                 1f,
                 1f,
-                0);
+                0);*/
     }
 
     @Override

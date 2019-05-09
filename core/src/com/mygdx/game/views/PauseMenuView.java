@@ -1,179 +1,165 @@
 package com.mygdx.game.views;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.mygdx.game.entities.PlayerData;
-import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.ui.elements.*;
+import com.mygdx.game.ui.graphic_types.RectGT;
+import com.mygdx.game.ui.pause_menu.WeaponIconUI;
 import com.mygdx.game.ui.pause_menu.WeaponInfoUI;
 import com.mygdx.game.ui.pause_menu.WeaponStatPopupUI;
 
 import static com.mygdx.game.util.Util.makeGray;
 
 public class PauseMenuView extends View {
-    private UI parentUI;
-    private SwapperUI inventoryViewSwapper;
-    private WeaponInfoUI weaponLeftInfo, weaponRightInfo;
+    private FrameBuffer frameBuffer;
+    private SpriteBatch bufferBatch;
+
+    private UI backgroundParent, foregroundParent;
+    private UI equippedWeapons;
+    private WeaponInfoUI weaponInfo1, weaponInfo2;
     private WeaponStatPopupUI statPopup;
 
-    private final Color bodyColor =         makeGray(0.85f, 1);
-    private final Color darkBodyColor =     makeGray(0.75f, 1);
-    private final Color borderColor =       makeGray(0.50f, 1);
-    private final Color textColor =         makeGray(0.06f, 1);
-    private final Color buttonColor =       bodyColor;
-    private final Color buttonHoverColor =  makeGray(0.8f, 1);
-    private final Color buttonPressColor =  makeGray(0.7f, 1);
-    private final float cornerSize = 15f;
-    private final float borderSize = 2f;
-    private final float maxWidth = 1300;
-    private final float maxHeight = 850;
+    private float pauseMenuAlpha = 0f;
+    private float pauseMenuFadeSpeed = 16.0f;
+
+    private final float topBarHeight = 80f;
+    private final float weaponIconWidth = 80f;
+    private final float weaponIconTitleHeight = 20f;
+    private final float weaponIconHeight = weaponIconWidth + weaponIconTitleHeight;
+
+    private final float topBarAlpha = 0.88f;
+    private final Color topBarColor = makeGray(0, topBarAlpha);
+    private final Color topBarBorderColor1 = makeGray(0.2f, topBarAlpha);
+    private final Color topBarBorderColor2 = makeGray(0.4f, topBarAlpha);
+
+    private final float UI_SCALE = 1.0f;
 
     public PauseMenuView(View parentView, int width, int height) {
         super(parentView, width, height);
 
-        statPopup = new WeaponStatPopupUI(this, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+        bufferBatch = new SpriteBatch();
+
+        //statPopup = new WeaponStatPopupUI(this, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
+        backgroundParent = new UI().setSize(width, height).setPosition(width/2, height/2)
+                .setContentFill(true, true)
+                .setGraphicType(new RectGT().setColor(makeGray(0.4f, 0.5f)));
 
 
-        float screenPaddingX = Math.max(35, (width - maxWidth)/2);
-        float screenPaddingY = Math.max(35, (height - maxHeight)/2);
-
-        parentUI = new BlankUI()
-                .setPosition(width/2, height/2).setSize(width, height).setPadding(screenPaddingX, screenPaddingY)
-                .setVertical(true).setContentFill(true, true);
-
-        UI sectionButtonContainer = new BlankUI()
-                .setHeight(72).setPadding(10, 0)
-                .setVertical(false).setContentFill(true, true).addToParent(parentUI);
-
-        UI sectionButton1 = new RoundedRectButtonUI(cornerSize, buttonColor, buttonHoverColor, buttonPressColor) {
-            @Override
-            public void press(double hoverTimer, double pressTimer) {
-                inventoryViewSwapper.setAllVisible(false).setViewVisible("equipment", true);
-            }
-            public void hold(double hoverTimer, double pressTimer) {}
-            public void release(double hoverTimer, double pressTimer) {}
-            public void mouseOver(double hoverTimer) {}
-            public void hover(double hoverTimer) {}
-            public void mouseLeave(double hoverTimer) {}
-        }.setBorder(borderSize, borderColor).setMargin(5, 0).setPadding(20, 20).addToParent(sectionButtonContainer);
-        UI sectionButtonText1 = new TextUI("Equipment", FontManager.aireExterior48, textColor)
-                .setTextAlign(Align.center, Align.center).addToParent(sectionButton1);
-
-        UI sectionButton2 = new RoundedRectButtonUI(cornerSize, buttonColor, buttonHoverColor, buttonPressColor) {
-            @Override
-            public void press(double hoverTimer, double pressTimer) {
-                inventoryViewSwapper.setAllVisible(false).setViewVisible("inventory", true);
-            }
-            public void hold(double hoverTimer, double pressTimer) {}
-            public void release(double hoverTimer, double pressTimer) {}
-            public void mouseOver(double hoverTimer) {}
-            public void hover(double hoverTimer) {}
-            public void mouseLeave(double hoverTimer) {}
-        }.setBorder(borderSize, borderColor).setMargin(5, 0).setPadding(20, 20).addToParent(sectionButtonContainer);
-        UI sectionButtonText2 = new TextUI("Inventory", FontManager.aireExterior48, textColor)
-                .setTextAlign(Align.center, Align.center).addToParent(sectionButton2);
-
-        UI sectionButton3 = new RoundedRectButtonUI(cornerSize, buttonColor, buttonHoverColor, buttonPressColor) {
-            @Override
-            public void press(double hoverTimer, double pressTimer) {
-                inventoryViewSwapper.setAllVisible(false).setViewVisible("upgrades", true);
-            }
-            public void hold(double hoverTimer, double pressTimer) {}
-            public void release(double hoverTimer, double pressTimer) {}
-            public void mouseOver(double hoverTimer) {}
-            public void hover(double hoverTimer) {}
-            public void mouseLeave(double hoverTimer) {}
-        }.setBorder(borderSize, borderColor).setMargin(5, 0).setPadding(20, 20).addToParent(sectionButtonContainer);
-        UI sectionButtonText3 = new TextUI("Upgrades", FontManager.aireExterior48, textColor)
-                .setTextAlign(Align.center, Align.center).addToParent(sectionButton3);
+        foregroundParent = new UI().setSize(width, height).setPosition(width/2, height/2)
+                .setContentAlign(UI.STRETCH, UI.CENTER).setContentFill(false, true);
+        UI topBar = new UI().setHeight(topBarHeight * UI_SCALE).setContentFill(true, true)
+                .addToParent(foregroundParent);
+        UI topBarContainer = new UI().setContentAlign(UI.BOTTOM, UI.LEFT).setPadding(10 * UI_SCALE, 10 * UI_SCALE)
+                .setGraphicType(new RectGT().setColor(topBarColor)).addToParent(topBar);
+        UI topBarBorder1 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor1)).addToParent(topBar);
+        UI topBarBorder2 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor2)).addToParent(topBar);
 
 
-
-        inventoryViewSwapper = new SwapperUI();
-        inventoryViewSwapper.addToParent(parentUI);
-
-
-
-        UI equipmentSection = new RoundedRectUI(cornerSize, bodyColor)
-                .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false).setContentFill(true, true);
-
-        weaponLeftInfo = new WeaponInfoUI(statPopup, 1, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
-        weaponLeftInfo.addToParent(equipmentSection);
-
-        UI weaponCenterInfo = new BlankUI()
-                .setPadding(20, 20).setMargin(60, 0).addToParent(equipmentSection);
-
-        weaponRightInfo = new WeaponInfoUI(statPopup, -1, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
-        weaponRightInfo.addToParent(equipmentSection);
+        UI botBar = new UI().setHeight(topBarHeight * UI_SCALE).setContentFill(true, true)
+                .addToParent(foregroundParent);
+        UI botBarBorder2 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor2)).addToParent(botBar);
+        UI botBarBorder1 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor1)).addToParent(botBar);
+        UI botBarContainer = new UI().setContentAlign(UI.TOP, UI.LEFT).setPadding(10 * UI_SCALE, 10 * UI_SCALE)
+                .setGraphicType(new RectGT().setColor(topBarColor)).addToParent(botBar);
 
 
-
-        UI inventorySection = new RoundedRectUI(cornerSize, bodyColor)
-                .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false)
-                .setContentFill(true, true).setContentAlign(UI.CENTER, UI.CENTER);
-
-        UI inventoryTitleText = new TextUI("INVENTORY", FontManager.aireExterior48, textColor)
-                .fitText().setTextAlign(Align.center, Align.center).addToParent(inventorySection);
+        backgroundParent.format();
+        foregroundParent.format();
 
 
+        equippedWeapons = new UI().setContentFit(true, true);
+        WeaponIconUI weaponIcon = new WeaponIconUI(weaponIconWidth, weaponIconHeight, weaponIconTitleHeight);
+        weaponIcon.setWeapon(PlayerData.getEquippedWeapon(0));
+        equippedWeapons.addChild(weaponIcon);
 
-        UI upgradesSection = new RoundedRectUI(cornerSize, bodyColor)
-                .setBorder(borderSize, borderColor).setPadding(20, 20).setVertical(false)
-                .setContentFill(true, true).setContentAlign(UI.CENTER, UI.CENTER);
+        equippedWeapons.setPosition(width/2, height/2);
+        equippedWeapons.format();
 
-        UI upgradesTitleText = new TextUI("UPGRADES", FontManager.aireExterior48, textColor)
-                .fitText().setTextAlign(Align.center, Align.center).addToParent(upgradesSection);
-
-
-
-        inventoryViewSwapper
-                .addChild("equipment", equipmentSection)
-                .addChild("inventory", inventorySection)
-                .addChild("upgrades", upgradesSection)
-                .setAllVisible(false).setViewVisible("equipment", true);
-
-
-        weaponLeftInfo.setWeapon(PlayerData.getEquippedWeapon(0));
-        weaponRightInfo.setWeapon(PlayerData.getEquippedWeapon(1));
-
-
-        parentUI.format();
+        //weaponLeftInfo.setWeapon(PlayerData.getEquippedWeapon(0));
+        //weaponRightInfo.setWeapon(PlayerData.getEquippedWeapon(1));
     }
 
     @Override
     public void setFocused(boolean focused) {
         super.setFocused(focused);
 
-        parentUI.setActive(focused);
-        parentUI.update(0);
+        backgroundParent.setActive(focused);
+        backgroundParent.update(0);
+
+        equippedWeapons.setActive(focused);
+        equippedWeapons.update(0);
+
+        foregroundParent.setActive(focused);
+        foregroundParent.update(0);
     }
 
     @Override
     public void update(double delta) {
-        parentUI.update(delta);
-        parentUI.format();
+        if(isFocused)
+            pauseMenuAlpha = (float)Math.min(1, pauseMenuAlpha + delta * pauseMenuFadeSpeed);
+        else
+            pauseMenuAlpha = (float)Math.max(0, pauseMenuAlpha - delta * pauseMenuFadeSpeed);
 
-        if(statPopup.isActive()) {
+
+        backgroundParent.update(delta);
+        backgroundParent.format();
+
+
+        equippedWeapons.update(delta);
+
+        /*if(statPopup.isActive()) {
             statPopup.update(delta);
-        }
+        }*/
+
+        foregroundParent.update(delta);
+        foregroundParent.format();
     }
 
     @Override
     public void preDraw() {
+        frameBuffer.bind();
+        Gdx.gl.glClearColor(0, 0, 0, 0.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT |
+                (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
+        bufferBatch.enableBlending();
+        bufferBatch.begin();
+        backgroundParent.draw(bufferBatch);
+
+        /*if(statPopup.isActive()) {
+            statPopup.draw(batch);
+        }*/
+        equippedWeapons.draw(bufferBatch);
+
+
+        foregroundParent.draw(bufferBatch);
+        bufferBatch.end();
+
+        FrameBuffer.unbind();
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        parentUI.draw(batch);
-
-        if(statPopup.isActive())
-            statPopup.draw(batch);
+        batch.setColor(1, 1, 1, pauseMenuAlpha);
+        batch.draw(frameBuffer.getColorBufferTexture(), 0, height, width, -height);
+        batch.setColor(1, 1, 1, 1);
     }
 
     @Override
     public void processViewAction(String action) {
 
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        frameBuffer.dispose();
+        bufferBatch.dispose();
     }
 }

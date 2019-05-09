@@ -26,6 +26,7 @@ public class PopupUI extends UI {
 
     @Override
     public void draw(SpriteBatch batch) {
+        graphicType.draw(batch, centerX, centerY, width, height);
         drawChildren(batch);
     }
 

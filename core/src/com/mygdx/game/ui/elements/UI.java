@@ -1,10 +1,12 @@
 package com.mygdx.game.ui.elements;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.ui.graphic_types.BlankGT;
+import com.mygdx.game.ui.graphic_types.GraphicType;
 
 import java.util.ArrayList;
 
-public abstract class UI {
+public class UI {
     public static final int LEFT = 0;
     public static final int CENTER = 1;
     public static final int RIGHT = 2;
@@ -16,6 +18,8 @@ public abstract class UI {
     protected float paddingX, paddingY;
     protected float centerX, centerY;
     protected float width, height;
+
+    protected GraphicType graphicType;
 
     protected boolean vertical = true;
     protected boolean fillContentsVertical = false;
@@ -39,8 +43,14 @@ public abstract class UI {
         this.marginY = 0;
         this.paddingX = 0;
         this.paddingY = 0;
+        this.graphicType = new BlankGT();
 
         children = new ArrayList<UI>();
+    }
+
+    public UI setGraphicType(GraphicType graphicType) {
+        this.graphicType = graphicType;
+        return this;
     }
 
     public void setActive(boolean active) {
@@ -333,8 +343,14 @@ public abstract class UI {
         }
     }
 
-    public abstract void update(double delta);
-    public abstract void draw(SpriteBatch batch);
+    public void update(double delta) {
+        updateChildren(delta);
+    }
+
+    public void draw(SpriteBatch batch) {
+        graphicType.draw(batch, centerX, centerY, width, height);
+        drawChildren(batch);
+    }
 
     protected void updateChildren(double delta) {
         for(UI child: children) {
@@ -485,5 +501,9 @@ public abstract class UI {
 
     public float getInnerHeight() {
         return height - paddingY*2;
+    }
+
+    public GraphicType getGraphicType() {
+        return graphicType;
     }
 }

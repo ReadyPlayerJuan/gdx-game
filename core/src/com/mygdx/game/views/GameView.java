@@ -15,7 +15,6 @@ import com.mygdx.game.entities.enemies.Dummy;
 import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.weapons.WeaponType;
-import com.mygdx.game.weapons.guns.Pistol;
 
 public class GameView extends View {
     private PauseMenuView pauseMenuView;
@@ -26,7 +25,7 @@ public class GameView extends View {
     private BoardCamera camera;
 
     private FrameBuffer gameFrameBuffer;
-    private SpriteBatch batch;
+    private SpriteBatch bufferBatch;
 
     public GameView(View parentView, int width, int height) {
         super(parentView, width, height);
@@ -41,7 +40,8 @@ public class GameView extends View {
         camera = new BoardCamera(width, height);
 
         gameFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, width, height, false);
-        batch = new SpriteBatch();
+        //gameFrameBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        bufferBatch = new SpriteBatch();
 
         Player p = new Player();
         p.setBoardCamera(camera);
@@ -80,23 +80,25 @@ public class GameView extends View {
     public void preDraw() {
         gameFrameBuffer.bind();
         Gdx.gl.glClearColor(1f, 1f, 1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT |
+                (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        board.draw(batch);
-        entityManager.draw(batch);
-        batch.end();
+        bufferBatch.setProjectionMatrix(camera.combined);
+        bufferBatch.begin();
+        board.draw(bufferBatch);
+        entityManager.draw(bufferBatch);
+        bufferBatch.end();
 
         FrameBuffer.unbind();
+
+        pauseMenuView.preDraw();
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         batch.draw(gameFrameBuffer.getColorBufferTexture(), 0, 0);
 
-        if(paused)
-            pauseMenuView.draw(batch);
+        pauseMenuView.draw(batch);
     }
 
     @Override
@@ -107,6 +109,7 @@ public class GameView extends View {
     @Override
     public void dispose() {
         super.dispose();
-        batch.dispose();
+        gameFrameBuffer.dispose();
+        bufferBatch.dispose();
     }
 }

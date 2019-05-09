@@ -7,7 +7,7 @@ import com.mygdx.game.textures.TextureManager;
 import com.mygdx.game.ui.elements.UI;
 
 public class WeaponRollSliderUI extends UI {
-    private final Color positiveColorOuter = Color.FOREST;
+    /*private final Color positiveColorOuter = Color.FOREST;
     private final Color positiveColorInner = Color.GREEN;
     private final Color negativeColorOuter = Color.FIREBRICK;
     private final Color negativeColorInner = Color.RED;
@@ -59,5 +59,5 @@ public class WeaponRollSliderUI extends UI {
         batch.draw(texture, centerX - innerWidth/2, centerY - innerHeight/2, lineSize, innerHeight);
         batch.draw(texture, centerX + innerWidth/2 - lineSize, centerY - innerHeight/2, lineSize, innerHeight);
         batch.draw(texture, centerX - innerWidth/2, centerY - lineSize/2, innerWidth, lineSize);
-    }
+    }*/
 }

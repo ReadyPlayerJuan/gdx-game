@@ -14,7 +14,7 @@ import static java.lang.Math.*;
 import static java.lang.Math.abs;
 
 public class Dummy extends Enemy {
-    private Animation<TextureRegion> idleAnimation;
+    //private Animation<TextureRegion> idleAnimation;
     private float animationTimer = 0;
 
     private BodyHitbox hitbox;
@@ -34,8 +34,8 @@ public class Dummy extends Enemy {
 
         terrainCollisionRadius = radius;
 
-        idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
-        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        //idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
+        //idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         hitbox = new BodyHitbox(this, team, radius) {
             @Override
@@ -95,7 +95,7 @@ public class Dummy extends Enemy {
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.draw(idleAnimation.getKeyFrame(animationTimer),
+        /*batch.draw(idleAnimation.getKeyFrame(animationTimer),
                 (float)(x-radius),
                 (float)(y-radius),
                 (float)radius,
@@ -104,7 +104,7 @@ public class Dummy extends Enemy {
                 (float)radius*2,
                 1f,
                 1f,
-                0);
+                0);*/
     }
 
     @Override

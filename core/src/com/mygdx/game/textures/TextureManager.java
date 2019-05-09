@@ -1,8 +1,10 @@
 package com.mygdx.game.textures;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -24,7 +26,8 @@ public class TextureManager {
 
         if(sheetRows != 1 || sheetCols != 1) {
             if(textureSheets.get(data) == null) {
-                Texture texture = new Texture(data.getFileName());
+                Texture texture = new Texture(Gdx.files.internal(data.getFileName()));
+                texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
                 TextureRegion[][] regions = TextureRegion.split(texture, texture.getWidth() / sheetCols, texture.getHeight() / sheetRows);
                 TextureRegion[] regionsFlat = new TextureRegion[regions.length * regions[0].length];
 
@@ -40,8 +43,11 @@ public class TextureManager {
     }
 
     public static void loadTexture(TextureData data) {
-        if(textures.get(data) == null)
-            textures.put(data, new Texture(data.getFileName()));
+        if(textures.get(data) == null) {
+            Texture texture = new Texture(Gdx.files.internal(data.getFileName()));
+            texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+            textures.put(data, texture);
+        }
     }
 
     public static Texture getTexture(TextureData data) {
@@ -77,6 +83,7 @@ public class TextureManager {
         pixmap.setColor(color);
         pixmap.fillRectangle(0, 0, width, height);
         Texture texture = new Texture(pixmap);
+        //texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
         pixmap.dispose();
         return texture;
     }

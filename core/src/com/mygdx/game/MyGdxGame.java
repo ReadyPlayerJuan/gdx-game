@@ -13,8 +13,8 @@ import com.mygdx.game.views.View;
 
 public class MyGdxGame extends ApplicationAdapter {
 	public static final String TITLE = "Test GDX Game";
-	public static final int WIDTH = 1300;
-	public static final int HEIGHT = 800;
+	public static final int WIDTH = 1600;
+	public static final int HEIGHT = 900;
 
 	private View mainView;
 	private SpriteBatch batch;
@@ -27,6 +27,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		mainView = new MainView(WIDTH, HEIGHT);
 		batch = new SpriteBatch();
+		batch.enableBlending();
 	}
 
 	@Override
@@ -41,7 +42,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		mainView.preDraw();
 
 		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT |
+				(Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
 		batch.begin();
 		mainView.draw(batch);

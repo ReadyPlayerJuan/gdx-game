@@ -12,6 +12,9 @@ public class DesktopLauncher {
 		config.vSyncEnabled = false;
 		config.foregroundFPS = 60;
 
+		//anti aliasing
+		//config.samples = 4;
+
 		config.width = MyGdxGame.WIDTH;
 		config.height = MyGdxGame.HEIGHT;
 		config.title = MyGdxGame.TITLE;

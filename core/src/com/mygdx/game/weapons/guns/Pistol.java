@@ -6,39 +6,44 @@ import com.mygdx.game.weapons.Weapon;
 import com.mygdx.game.weapons.WeaponController;
 import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
+import com.mygdx.game.weapons.stats.WeaponRarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
 public class Pistol extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new Pistol();
+            return new Pistol(WeaponRarity.values()[(int)(Math.random() * WeaponRarity.values().length)]);
         }
     };
 
-    private static final WeaponStat[] availableStats = new WeaponStat[] {
-            WeaponStat.BULLET_DAMAGE,
-            WeaponStat.BULLET_SPEED,
-            WeaponStat.BULLET_SIZE,
-            WeaponStat.BULLET_KNOCKBACK,
-            WeaponStat.WEAPON_SPREAD,
-            WeaponStat.WEAPON_FIRE_RATE,
-            WeaponStat.WEAPON_KICK,
-    };
-    private static final double[][] defaultStats = new double[][] {
-            {13.5, 3.0},     //DAMAGE
-            {450, 75},       //BULLET SPEED
-            {12.0, 1.5},     //BULLET SIZE
-            {225, 50},       //BULLET KNOCKBACK
-            {0.06, 0.02},    //WEAPON SPREAD
-            {3.00, 0.5},     //WEAPON FIRE RATE
-            {175.0, 50.0},   //WEAPON KICK
-    };
+    private static WeaponStat[] availableStats() {
+        return new WeaponStat[] {
+                WeaponStat.BULLET_DAMAGE,
+                WeaponStat.BULLET_SPEED,
+                WeaponStat.BULLET_SIZE,
+                WeaponStat.BULLET_KNOCKBACK,
+                WeaponStat.WEAPON_SPREAD,
+                WeaponStat.WEAPON_FIRE_RATE,
+                WeaponStat.WEAPON_KICK,
+        };
+    }
+    private static double[][] defaultStats() {
+        return new double[][]{
+                {13.5, 3.0},     //DAMAGE
+                {450, 75},       //BULLET SPEED
+                {12.0, 1.5},     //BULLET SIZE
+                {225, 50},       //BULLET KNOCKBACK
+                {0.06, 0.02},    //WEAPON SPREAD
+                {3.00, 0.5},     //WEAPON FIRE RATE
+                {175.0, 50.0},   //WEAPON KICK
+        };
+    }
 
     private double fireTimer = 0;
 
-    public Pistol() {
-        super(WeaponType.PISTOL, TextureData.WEAPONS, 0, availableStats, defaultStats);
+    public Pistol(WeaponRarity rarity) {
+        super(WeaponType.PISTOL, rarity, TextureData.WEAPONS, 0, availableStats(), defaultStats());
 
         randomizeVariationRolls();
         initStats();
@@ -70,7 +75,7 @@ public class Pistol extends Weapon {
 
         controller.kick(angle + Math.PI, stats[6][1]);
 
-        new TestProjectile(controller, this, TextureData.PLAYER_SHEET,
+        new TestProjectile(controller, this, null,//TextureData.PLAYER_SHEET,
                 controller.getX(), controller.getY(),
                 stats[0][1],   //damage
                 stats[1][1],   //speed

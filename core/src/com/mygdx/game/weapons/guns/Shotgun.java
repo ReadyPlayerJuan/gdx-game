@@ -6,42 +6,47 @@ import com.mygdx.game.weapons.Weapon;
 import com.mygdx.game.weapons.WeaponController;
 import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
+import com.mygdx.game.weapons.stats.WeaponRarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
 public class Shotgun extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new Shotgun();
+            return new Shotgun(WeaponRarity.values()[(int)(Math.random() * WeaponRarity.values().length)]);
         }
     };
 
-    private static final WeaponStat[] availableStats = new WeaponStat[] {
-            WeaponStat.BULLET_DAMAGE,
-            WeaponStat.BULLET_NUM,
-            WeaponStat.BULLET_SPEED,
-            WeaponStat.BULLET_SIZE,
-            WeaponStat.BULLET_KNOCKBACK,
-            WeaponStat.WEAPON_SPREAD,
-            WeaponStat.WEAPON_FIRE_RATE,
-            WeaponStat.WEAPON_KICK,
-    };
-    private static final double[][] defaultStats = new double[][] {
-            {7.0, 1.5},      //DAMAGE
-            {4.5, 1.0},      //BULLET NUM
-            {500, 75},       //BULLET SPEED
-            {10.0, 1.2},     //BULLET SIZE
-            {100, 20},       //BULLET KNOCKBACK
-            {0.08, 0.02},    //WEAPON SPREAD
-            {1.20, 0.3},     //WEAPON FIRE RATE
-            {375.0, 75.0},   //WEAPON KICK
-    };
+    private static WeaponStat[] availableStats() {
+        return new WeaponStat[] {
+                WeaponStat.BULLET_DAMAGE,
+                WeaponStat.BULLET_NUM,
+                WeaponStat.BULLET_SPEED,
+                WeaponStat.BULLET_SIZE,
+                WeaponStat.BULLET_KNOCKBACK,
+                WeaponStat.WEAPON_SPREAD,
+                WeaponStat.WEAPON_FIRE_RATE,
+                WeaponStat.WEAPON_KICK,
+        };
+    }
+    private static double[][] defaultStats() {
+        return new double[][] {
+                {7.0, 1.5},      //DAMAGE
+                {4.5, 1.0},      //BULLET NUM
+                {500, 75},       //BULLET SPEED
+                {10.0, 1.2},     //BULLET SIZE
+                {100, 20},       //BULLET KNOCKBACK
+                {0.08, 0.02},    //WEAPON SPREAD
+                {1.20, 0.3},     //WEAPON FIRE RATE
+                {375.0, 75.0},   //WEAPON KICK
+        };
+    }
     private static final double BULLET_SPEED_VARIATION = 0.1;
 
     private double fireTimer = 0;
 
-    public Shotgun() {
-        super(WeaponType.SHOTGUN, TextureData.WEAPONS, 2, availableStats, defaultStats);
+    public Shotgun(WeaponRarity rarity) {
+        super(WeaponType.SHOTGUN, rarity, TextureData.WEAPONS, 2, availableStats(), defaultStats());
 
         randomizeVariationRolls();
         initStats();
@@ -81,7 +86,7 @@ public class Shotgun extends Weapon {
         for(int i = 0; i < numBullets; i++) {
             double variedAngle = angle - maxAngleVariation + individualAngleVariation*i * Math.random() * individualAngleVariation;
 
-            new TestProjectile(controller, this, TextureData.PLAYER_SHEET,
+            new TestProjectile(controller, this, null,//TextureData.PLAYER_SHEET,
                     controller.getX(), controller.getY(),
                     stats[0][1],   //damage
                     stats[2][1] * ((((Math.random() * 2) - 1) * BULLET_SPEED_VARIATION) + 1),   //speed
