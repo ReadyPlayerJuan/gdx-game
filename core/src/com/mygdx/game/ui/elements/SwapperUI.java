@@ -46,10 +46,17 @@ public class SwapperUI extends UI {
     }
 
     public SwapperUI setViewVisible(Object key, boolean visible) {
-        viewVisible.put(key, visible);
-        views.get(key).setActive(visible && this.active);
+        if(views.get(key) != null) {
+            viewVisible.put(key, visible);
+            views.get(key).setActive(visible && this.active);
+        }
         return this;
     }
+
+    /*public SwapperUI setViewActive(Object key, boolean active) {
+        views.get(key).setActive(active);
+        return this;
+    }*/
 
     public SwapperUI setAllVisible(boolean visible) {
         for(Object key: keys) {

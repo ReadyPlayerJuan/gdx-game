@@ -13,6 +13,7 @@ public class TextUI extends UI {
     private GlyphLayout glyphLayout;
     private String truncate = null;
     private boolean wrap = false;
+    private float textOffsetX, textOffsetY;
 
     private Color shadowColor;
     private float shadowOffsetX, shadowOffsetY;
@@ -36,6 +37,12 @@ public class TextUI extends UI {
         this.shadowOffsetY = shadowOffsetY;
         shadowGlyphLayout = new GlyphLayout();
         updateText();
+        return this;
+    }
+
+    public TextUI setOffset(float offsetX, float offsetY) {
+        textOffsetX = offsetX;
+        textOffsetY = offsetY;
         return this;
     }
 
@@ -124,8 +131,8 @@ public class TextUI extends UI {
     public void draw(SpriteBatch batch) {
         graphicType.draw(batch, centerX, centerY, width, height);
         if(shadowColor != null)
-            font.draw(batch, shadowGlyphLayout, textX + shadowOffsetX, textY + shadowOffsetY);
-        font.draw(batch, glyphLayout, textX, textY);
+            font.draw(batch, shadowGlyphLayout, textX + textOffsetX + shadowOffsetX, textY + textOffsetY + shadowOffsetY);
+        font.draw(batch, glyphLayout, textX + textOffsetX, textY + textOffsetY);
         drawChildren(batch);
     }
 }

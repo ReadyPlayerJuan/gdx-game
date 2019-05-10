@@ -32,6 +32,15 @@ public class GameView extends View {
 
         PlayerData.setEquippedWeapon(0, WeaponType.generateRandomWeapon());
         PlayerData.setEquippedWeapon(1, WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
 
         pauseMenuView = new PauseMenuView(this, width, height);
 

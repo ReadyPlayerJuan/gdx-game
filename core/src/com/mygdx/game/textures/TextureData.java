@@ -5,7 +5,8 @@ public enum TextureData {
     SHAPES ("shapes.png", 8, 8),
     ROUNDED_RECT ("rounded_rect.png"),
     WEAPONS ("guns.png", 2, 2),
-    DIAGONALS ("diagonals.png");
+    DIAGONALS ("diagonals.png"),
+    ARROW ("arrow.png");
 
     private String fileName;
     private int sheetRows, sheetCols;

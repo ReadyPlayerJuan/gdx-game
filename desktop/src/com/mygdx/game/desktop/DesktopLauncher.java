@@ -10,7 +10,7 @@ public class DesktopLauncher {
 
 		//uncap fps
 		config.vSyncEnabled = false;
-		config.foregroundFPS = 60;
+		config.foregroundFPS = 0;
 
 		//anti aliasing
 		//config.samples = 4;
@@ -18,6 +18,7 @@ public class DesktopLauncher {
 		config.width = MyGdxGame.WIDTH;
 		config.height = MyGdxGame.HEIGHT;
 		config.title = MyGdxGame.TITLE;
+		config.resizable = false;
 
 		new LwjglApplication(new MyGdxGame(), config);
 	}
