@@ -1,5 +1,6 @@
 package com.mygdx.game.weapons;
 
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.guns.AssaultRifle;
 import com.mygdx.game.weapons.guns.Pistol;
 import com.mygdx.game.weapons.guns.Shotgun;
@@ -56,11 +57,19 @@ public enum WeaponType {
         return types[types.length-1];
     }
 
+    public static Weapon generateWeapon(WeaponType type, Rarity rarity) {
+        return type.generator.generateWeapon(rarity);
+    }
+
     public static Weapon generateWeapon(WeaponType type) {
         return type.generator.generateWeapon();
     }
 
-    public static Weapon generateRandomWeapon() {
+    public static Weapon generateWeapon(Rarity rarity) {
+        return generateWeapon(generateRandomWeaponType(), rarity);
+    }
+
+    public static Weapon generateWeapon() {
         return generateWeapon(generateRandomWeaponType());
     }
 }

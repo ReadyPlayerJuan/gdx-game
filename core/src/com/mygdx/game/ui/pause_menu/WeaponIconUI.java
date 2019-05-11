@@ -7,29 +7,27 @@ import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
 import com.mygdx.game.ui.FontManager;
 import com.mygdx.game.ui.elements.*;
-import com.mygdx.game.ui.graphic_types.BlankGT;
 import com.mygdx.game.ui.graphic_types.RectBorderGT;
 import com.mygdx.game.ui.graphic_types.RectGT;
 import com.mygdx.game.ui.graphic_types.RectTrueBorderGT;
 import com.mygdx.game.views.PauseMenuView;
 import com.mygdx.game.weapons.Weapon;
-import com.mygdx.game.weapons.stats.WeaponRarity;
+import com.mygdx.game.entities.Rarity;
 
 import static com.mygdx.game.util.Util.makeGray;
 
 public class WeaponIconUI extends FloaterUI {
-    protected final PauseMenuView pauseMenuView;
-    protected WeaponIconContainer container;
-    protected Weapon weapon = null;
+    private final PauseMenuView pauseMenuView;
+    private WeaponIconContainer container;
+    private Weapon weapon = null;
 
-    protected float width, height;
+    private float width, height;
 
-    protected SwapperUI emptyIconSwapper;
-    protected UI weaponIcon, weaponIconSpriteContainer, weaponIconStarContainer;
-    protected TextUI weaponIconText;
-    protected ButtonUI weaponIconButton;
-    protected final float iconBorderSize = 3.0f;
-    protected final float shadowOffset = 4.0f;
+    private SwapperUI emptyIconSwapper;
+    private UI weaponIcon, weaponIconSpriteContainer, weaponIconStarContainer;
+    private TextUI weaponIconText;
+    private ButtonUI weaponIconButton;
+    private final float iconBorderSize = 3.0f;
 
     public WeaponIconUI(PauseMenuView pauseMenu, WeaponIconContainer container, float width, float height, float textHeight) {
         this.pauseMenuView = pauseMenu;
@@ -55,7 +53,7 @@ public class WeaponIconUI extends FloaterUI {
         UI weaponIconShadow = new UI() {
             @Override
             public void draw(SpriteBatch batch) {
-                graphicType.draw(batch, centerX + shadowOffset, centerY - shadowOffset, width, height);
+                graphicType.draw(batch, centerX + PauseMenuView.SHADOW_OFFSET, centerY - PauseMenuView.SHADOW_OFFSET, width, height);
                 drawChildren(batch);
             }
         }.setGraphicType(new RectGT().setColor(PauseMenuView.SHADOW_COLOR));
@@ -83,7 +81,7 @@ public class WeaponIconUI extends FloaterUI {
         weaponIconSpriteStarOverlay.addToParent(weaponIcon);
 
         weaponIconSpriteContainer = new UI().setMargin(iconBorderSize, iconBorderSize).setContentFill(true, true)
-                .setGraphicType(new RectBorderGT().setColor(makeGray(0.85f, 1.0f)));
+                .setGraphicType(new RectBorderGT().setColor(PauseMenuView.UI_LIGHT_GRAY));
         weaponIconStarContainer = new UI().setContentAlign(UI.BOTTOM, UI.CENTER).setPadding(0, 4);
 
         weaponIconSpriteStarOverlay.addChild("sprite", weaponIconSpriteContainer).addChild("stars", weaponIconStarContainer)
@@ -103,8 +101,6 @@ public class WeaponIconUI extends FloaterUI {
     }
 
     public WeaponIconUI setWeapon(Weapon weapon) {
-        this.weapon = weapon;
-
         if(weapon == null) {
             emptyIconSwapper.setAllVisible(false).setViewVisible("empty", true).setViewVisible("button", true);
 
@@ -116,20 +112,20 @@ public class WeaponIconUI extends FloaterUI {
             }
 
             format();
-        } else {
+        } else if(!weapon.equals(this.weapon)) {
             emptyIconSwapper.setAllVisible(false).setViewVisible("icon", true).setViewVisible("button", true);
 
             if(pauseMenuView != null)
                 weaponIconButton.setGraphicType(new RectGT());
 
-            WeaponRarity rarity = weapon.getRarity();
+            Rarity rarity = weapon.getRarity();
             weaponIconText.setColor(rarity.getTextColor());
             weaponIconText.setText(weapon.getName());
             weaponIcon.getGraphicType().setColor(rarity.getMainColor());
             weaponIconSpriteContainer.getGraphicType().setBorder(new float[] {iconBorderSize}, new Color[] {rarity.getBorderColor()});
 
             weaponIconSpriteContainer.removeChildren();
-            weaponIconSpriteContainer.addChild(new UI().setMargin(4, 4).setGraphicType(new RectGT(weapon.getTexture()).setColor(makeGray(0.3f, 1f))));
+            weaponIconSpriteContainer.addChild(new UI().setMargin(4, 4).setGraphicType(new RectGT(weapon.getTexture()).setColor(PauseMenuView.UI_DARK_GRAY)));
             weaponIconSpriteContainer.format();
 
             weaponIconStarContainer.removeChildren();
@@ -138,6 +134,8 @@ public class WeaponIconUI extends FloaterUI {
 
             format();
         }
+
+        this.weapon = weapon;
         return this;
     }
 

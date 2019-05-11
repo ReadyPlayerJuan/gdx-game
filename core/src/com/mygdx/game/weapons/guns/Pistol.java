@@ -6,14 +6,19 @@ import com.mygdx.game.weapons.Weapon;
 import com.mygdx.game.weapons.WeaponController;
 import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
-import com.mygdx.game.weapons.stats.WeaponRarity;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
 public class Pistol extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new Pistol(WeaponRarity.values()[(int)(Math.random() * WeaponRarity.values().length)]);
+            return generateWeapon(Rarity.values()[(int)(Math.random() * Rarity.values().length)]);
+        }
+
+        @Override
+        public Weapon generateWeapon(Rarity rarity) {
+            return new Pistol(Rarity.values()[(int)(Math.random() * Rarity.values().length)]);
         }
     };
 
@@ -30,19 +35,19 @@ public class Pistol extends Weapon {
     }
     private static double[][] defaultStats() {
         return new double[][]{
-                {13.5, 3.0},     //DAMAGE
-                {450, 75},       //BULLET SPEED
-                {12.0, 1.5},     //BULLET SIZE
-                {225, 50},       //BULLET KNOCKBACK
-                {0.06, 0.02},    //WEAPON SPREAD
-                {3.00, 0.5},     //WEAPON FIRE RATE
-                {175.0, 50.0},   //WEAPON KICK
+                {13.5, 5.0},     //DAMAGE
+                {400, 150},      //BULLET SPEED
+                {12.0, 2.5},     //BULLET SIZE
+                {225, 125},      //BULLET KNOCKBACK
+                {0.060, 0.030},  //WEAPON SPREAD
+                {3.00, 1.5},     //WEAPON FIRE RATE
+                {175.0, 100.0},   //WEAPON KICK
         };
     }
 
     private double fireTimer = 0;
 
-    public Pistol(WeaponRarity rarity) {
+    public Pistol(Rarity rarity) {
         super(WeaponType.PISTOL, rarity, TextureData.WEAPONS, 0, availableStats(), defaultStats());
 
         randomizeVariationRolls();
@@ -75,7 +80,7 @@ public class Pistol extends Weapon {
 
         controller.kick(angle + Math.PI, stats[6][1]);
 
-        new TestProjectile(controller, this, null,//TextureData.PLAYER_SHEET,
+        new TestProjectile(controller, this, //null,//TextureData.PLAYER_SHEET,
                 controller.getX(), controller.getY(),
                 stats[0][1],   //damage
                 stats[1][1],   //speed

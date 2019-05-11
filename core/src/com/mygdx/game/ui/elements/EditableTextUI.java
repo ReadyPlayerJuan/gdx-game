@@ -1,41 +1,37 @@
 package com.mygdx.game.ui.elements;
 
-/*import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
 import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.input.Typeable;
-import com.mygdx.game.textures.TextureData;
-import com.mygdx.game.util.Util;
+import com.mygdx.game.ui.graphic_types.GraphicType;
 
-public abstract class RoundedRectEditableTextUI extends ButtonUI implements Typeable {
+public abstract class EditableTextUI extends ButtonUI implements Typeable {
     private BitmapFont font;
     private Color color;
     private String text;
     private GlyphLayout glyphLayout;
     private String truncate = null;
     private boolean wrap = false;
+    private float textOffsetX, textOffsetY;
+
+    private Color shadowColor;
+    private float shadowOffsetX, shadowOffsetY;
+    private GlyphLayout shadowGlyphLayout;
 
     private float textX, textY;
     private int hAlign = Align.center;
     private int vAlign = Align.center;
 
-    private NinePatch sprite;
-    private Color borderColor;
-    private float borderSize = 0;
-
     private boolean selected = false;
     private int maxChars;
 
-    public RoundedRectEditableTextUI(float cornerSize, Color defaultColor, Color hoverColor, Color pressColor, String text, BitmapFont font, Color color, int maxChars) {
-        super(defaultColor, hoverColor, pressColor);
-
-        sprite = Util.createNinePatch(TextureData.ROUNDED_RECT, cornerSize);
+    public EditableTextUI(Color defaultColor, Color hoverColor, Color pressColor, GraphicType graphicType, String text, BitmapFont font, Color color, int maxChars) {
+        super(defaultColor, hoverColor, pressColor, graphicType);
 
         this.text = text;
         this.font = font;
@@ -46,9 +42,26 @@ public abstract class RoundedRectEditableTextUI extends ButtonUI implements Type
         updateText();
     }
 
-    public RoundedRectEditableTextUI setBorder(float size, Color color) {
-        borderSize = size;
-        borderColor = color;
+    public EditableTextUI setShadow(Color shadowColor, float shadowOffsetX, float shadowOffsetY) {
+        this.shadowColor = shadowColor;
+        this.shadowOffsetX = shadowOffsetX;
+        this.shadowOffsetY = shadowOffsetY;
+        shadowGlyphLayout = new GlyphLayout();
+        updateText();
+        return this;
+    }
+
+    public EditableTextUI setOffset(float offsetX, float offsetY) {
+        textOffsetX = offsetX;
+        textOffsetY = offsetY;
+        return this;
+    }
+
+    public EditableTextUI setColor(Color defaultColor, Color hoverColor, Color pressColor, Color fontColor) {
+        this.defaultColor = defaultColor;
+        this.hoverColor = hoverColor;
+        this.pressColor = pressColor;
+        this.color = fontColor;
         return this;
     }
 
@@ -59,7 +72,7 @@ public abstract class RoundedRectEditableTextUI extends ButtonUI implements Type
         updateText();
     }
 
-    public RoundedRectEditableTextUI fitText() {
+    public EditableTextUI fitText() {
         updateText();
         float textHeight = glyphLayout.height;
         float textWidth = glyphLayout.width;
@@ -91,45 +104,43 @@ public abstract class RoundedRectEditableTextUI extends ButtonUI implements Type
         }
 
         glyphLayout.setText(font, text, 0, text.length(), color, getInnerWidth(), hAlign, wrap, truncate);
+        if(shadowColor != null)
+            shadowGlyphLayout.setText(font, text, 0, text.length(), shadowColor, getInnerWidth(), hAlign, wrap, truncate);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        if(borderSize == 0) {
-            sprite.setColor(currentColor);
-            sprite.draw(batch, centerX - width / 2, centerY - height / 2, width, height);
-        } else {
-            sprite.setColor(borderColor);
-            sprite.draw(batch, centerX - width / 2, centerY - height / 2, width, height);
-            sprite.setColor(currentColor);
-            sprite.draw(batch, centerX - width / 2 + borderSize, centerY - height / 2 + borderSize, width - borderSize*2, height - borderSize*2);
-        }
-        font.draw(batch, glyphLayout, textX, textY);
+        //System.out.println(hover + " " + centerX + " " + centerY + " " + width + " " + height);
+        graphicType.setColor(currentColor).draw(batch, centerX, centerY, width, height);
+
+        if(shadowColor != null)
+            font.draw(batch, shadowGlyphLayout, textX + textOffsetX + shadowOffsetX, textY + textOffsetY + shadowOffsetY);
+        font.draw(batch, glyphLayout, textX + textOffsetX, textY + textOffsetY);
         drawChildren(batch);
     }
 
-    public RoundedRectEditableTextUI setTextAlign(int hAlign, int vAlign) {
+    public EditableTextUI setTextAlign(int hAlign, int vAlign) {
         this.hAlign = hAlign;
         this.vAlign = vAlign;
         return this;
     }
 
-    public RoundedRectEditableTextUI setText(String text) {
+    public EditableTextUI setText(String text) {
         this.text = text;
         return this;
     }
 
-    public RoundedRectEditableTextUI setTruncate(String truncate) {
+    public EditableTextUI setTruncate(String truncate) {
         this.truncate = truncate;
         return this;
     }
 
-    public RoundedRectEditableTextUI setWrap(boolean wrap) {
+    public EditableTextUI setWrap(boolean wrap) {
         this.wrap = wrap;
         return this;
     }
 
-    public RoundedRectEditableTextUI setColor(Color color) {
+    public EditableTextUI setColor(Color color) {
         this.color = color;
         return this;
     }
@@ -200,4 +211,3 @@ public abstract class RoundedRectEditableTextUI extends ButtonUI implements Type
 
     }
 }
-*/

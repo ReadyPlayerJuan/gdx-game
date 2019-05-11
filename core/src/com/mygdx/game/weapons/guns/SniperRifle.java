@@ -6,14 +6,19 @@ import com.mygdx.game.weapons.Weapon;
 import com.mygdx.game.weapons.WeaponController;
 import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
-import com.mygdx.game.weapons.stats.WeaponRarity;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
 public class SniperRifle extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new SniperRifle(WeaponRarity.values()[(int)(Math.random() * WeaponRarity.values().length)]);
+            return generateWeapon(Rarity.values()[(int)(Math.random() * Rarity.values().length)]);
+        }
+
+        @Override
+        public Weapon generateWeapon(Rarity rarity) {
+            return new SniperRifle(Rarity.values()[(int)(Math.random() * Rarity.values().length)]);
         }
     };
 
@@ -30,19 +35,19 @@ public class SniperRifle extends Weapon {
     }
     private static double[][] defaultStats() {
         return new double[][] {
-                {26.0, 6.0},     //DAMAGE
-                {950, 150},      //BULLET SPEED
-                {11.0, 1.0},     //BULLET SIZE
-                {400, 75},       //BULLET KNOCKBACK
-                {0.04, 0.015},   //WEAPON SPREAD
+                {26.0, 10.0},    //DAMAGE
+                {900, 300},      //BULLET SPEED
+                {11.0, 2.0},     //BULLET SIZE
+                {420, 175},      //BULLET KNOCKBACK
+                {0.03, 0.015},   //WEAPON SPREAD
                 {1.10, 0.40},    //WEAPON FIRE RATE
-                {400, 75},       //WEAPON KICK
+                {400, 150},      //WEAPON KICK
         };
     }
 
     private double fireTimer = 0;
 
-    public SniperRifle(WeaponRarity rarity) {
+    public SniperRifle(Rarity rarity) {
         super(WeaponType.SNIPER_RIFLE, rarity, TextureData.WEAPONS, 1, availableStats(), defaultStats());
 
         randomizeVariationRolls();
@@ -75,7 +80,7 @@ public class SniperRifle extends Weapon {
 
         controller.kick(angle + Math.PI, stats[6][1]);
 
-        new TestProjectile(controller, this, null,//TextureData.PLAYER_SHEET,
+        new TestProjectile(controller, this, //null,//TextureData.PLAYER_SHEET,
                 controller.getX(), controller.getY(),
                 stats[0][1],   //damage
                 stats[1][1],   //speed

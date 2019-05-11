@@ -8,6 +8,7 @@ import com.mygdx.game.ui.elements.ButtonUI;
 import com.mygdx.game.ui.elements.UI;
 import com.mygdx.game.ui.graphic_types.RectGT;
 import com.mygdx.game.views.PauseMenuView;
+import com.mygdx.game.weapons.Weapon;
 
 import java.util.ArrayList;
 
@@ -102,6 +103,16 @@ public class EquippedWeaponsUI extends UI implements WeaponIconContainer {
     public void updateEquippedWeapons() {
         PlayerData.setEquippedWeapon(0, weaponIcon1.getWeapon());
         PlayerData.setEquippedWeapon(1, weaponIcon2.getWeapon());
+    }
+
+    public void updateWeaponIcon(Weapon weapon) {
+        if(weaponIcon1.getWeapon().equals(weapon)) {
+            weaponIcon1.setWeapon(null);
+            weaponIcon1.setWeapon(weapon);
+        } else if(weaponIcon2.getWeapon().equals(weapon)) {
+            weaponIcon2.setWeapon(null);
+            weaponIcon2.setWeapon(weapon);
+        }
     }
 
     @Override

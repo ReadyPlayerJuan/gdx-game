@@ -3,173 +3,144 @@ package com.mygdx.game.ui.pause_menu;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
-import com.mygdx.game.input.ControlMapping;
-import com.mygdx.game.input.InputManager;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.ui.FontManager;
-import com.mygdx.game.ui.elements.*;
+import com.mygdx.game.ui.elements.EditableTextUI;
+import com.mygdx.game.ui.elements.SwapperUI;
+import com.mygdx.game.ui.elements.TextUI;
+import com.mygdx.game.ui.elements.UI;
+import com.mygdx.game.ui.graphic_types.RectGT;
+import com.mygdx.game.ui.graphic_types.RoundedRectGT;
+import com.mygdx.game.views.PauseMenuView;
 import com.mygdx.game.weapons.Weapon;
-import com.mygdx.game.weapons.stats.WeaponStat;
-import static com.mygdx.game.util.Util.makeGray;
 
 public class WeaponInfoUI extends UI {
-    /*private final float verticalSpacing = 8;
-    private final int weaponTitleMaxChars = 12;
+    private final PauseMenuView pauseMenuView;
+    private final float UI_SCALE;
 
-    private RoundedRectEditableTextUI weaponInfoTitle;
-    private TextUI weaponInfoSubTitle, weaponStatNames, weaponStatValues, weaponStatBaseValues, weaponStatRolls;
-    private UI weaponStatsButtonsContainer;
-    private SwapperUI weaponStatsRightSwapper;
+    private float width, height;
 
-    private WeaponStatPopupUI statPopup;
-    private int statPopupSide;
-    private final double popupHoverDelay = 0.5;
+    private Weapon weapon;
 
-    private Weapon weapon = null;
+    //private SwapperUI frameContainer;
+    private UI weaponInfoFrame, weaponInfoStatsContainerBorder;
+    private EditableTextUI weaponInfoTitle;
+    private TextUI weaponInfoStars, statNamesText, statValuesText;
 
-    public WeaponInfoUI(WeaponStatPopupUI statPopup, int statPopupSide, float cornerSize, float borderSize, Color bodyColor, Color darkBodyColor, Color borderColor, Color textColor) {
-        this.statPopup = statPopup;
-        this.statPopupSide = statPopupSide;
+    private final float cornerSize = 12.0f;
+    private final float iconBorderSize = 4.0f;
 
+    public WeaponInfoUI(float UI_SCALE, final PauseMenuView pauseMenuView, float width, float height) {
+        this.UI_SCALE = UI_SCALE;
+        this.pauseMenuView = pauseMenuView;
+        this.width = width;
+        this.height = height;
+        setSize(width, height);
         setContentFill(true, true);
 
-        UI weaponInfo = new RoundedRectUI(cornerSize, darkBodyColor)
-                .setPadding(0, 0).setContentFill(true, true).addToParent(this);
+        SwapperUI frameContainer = new SwapperUI();
+        frameContainer.addToParent(this);
 
-        UI weaponTitleContainer = new RoundedRectUI(cornerSize, bodyColor)
-                .setBorder(borderSize, borderColor).setContentFit(true, false).setContentFill(false, true)
-                .setPadding(6, 6).setMargin(25, verticalSpacing).addToParent(weaponInfo);
+        UI weaponInfoShadow = new UI() {
+            @Override
+            public void draw(SpriteBatch batch) {
+                graphicType.draw(batch, centerX + PauseMenuView.SHADOW_OFFSET, centerY - PauseMenuView.SHADOW_OFFSET, width, height);
+                drawChildren(batch);
+            }
+        }.setGraphicType(new RoundedRectGT(cornerSize).setColor(PauseMenuView.SHADOW_COLOR));
 
-        weaponInfoTitle = new RoundedRectEditableTextUI(cornerSize,
-                new Color(0, 0, 0, 0), new Color(0, 0, 0, 0.15f), new Color(0, 0, 0, 0.3f),
-                "WEAPON NAME", FontManager.aireExterior48, textColor, weaponTitleMaxChars) {
+        weaponInfoFrame = new UI().setGraphicType(new RoundedRectGT(cornerSize)).setContentFill(true, true);
+
+
+        UI weaponInfoTitleContainer = new UI().setContentFit(true, false).setContentFill(false, true);
+        weaponInfoTitle = new EditableTextUI(Color.BLUE, Color.RED, Color.GREEN, new RoundedRectGT(cornerSize),
+                "WEAPON TITLE", FontManager.aireExterior36, Color.BLACK, 16) {
             @Override
             public void textChanged(String newText) {
                 if(weapon != null) {
                     weapon.setName(newText);
+                    pauseMenuView.updateWeaponData(weapon);
                 }
             }
         };
-        weaponInfoTitle.setPadding(0, 6).setContentFit(true, false);
-        weaponInfoTitle.updateText();
-        weaponInfoTitle.addToParent(weaponTitleContainer);
+        weaponInfoTitle.setPadding(6, 6).setMargin(12, iconBorderSize * 1.5f);
+        weaponInfoTitle.fitText().setWidth(0).addToParent(weaponInfoTitleContainer);
 
-        weaponInfoSubTitle = new TextUI("rarity, star rating", FontManager.aireExterior24, textColor);
-        weaponInfoSubTitle.fitText().setMargin(0, 2).addToParent(weaponTitleContainer);
-
-        SwapperUI weaponStatsContainerSwapper = new SwapperUI();
-        weaponStatsContainerSwapper.addToParent(weaponInfo);
-
-        UI weaponStatsContainer = new BlankUI()
-                .setVertical(false).setContentFill(true, true);//.addToParent(weaponInfo);
-
-        weaponStatsButtonsContainer = new BlankUI().setPaddingY(2)
-                .setVertical(true).setContentAlign(UI.TOP, UI.CENTER).setContentFill(false, true);//.addToParent(weaponInfo);
+        weaponInfoStars = new TextUI("***", FontManager.aireExterior64, Color.BLACK);
+        weaponInfoStars.setOffset(0, -8).setHeight(14).addToParent(weaponInfoTitleContainer);
 
 
-        weaponStatsContainerSwapper.addChild("stats", weaponStatsContainer).addChild("buttons", weaponStatsButtonsContainer);
-        weaponStatsContainerSwapper.setAllVisible(true);
+        weaponInfoStatsContainerBorder = new UI().setGraphicType(new RoundedRectGT(cornerSize).setColor(Color.GRAY))
+                .setMargin(iconBorderSize*1.5f, iconBorderSize*1.5f).setContentFill(true, true);
+        UI weaponInfoStatsContainer = new UI().setGraphicType(new RoundedRectGT(cornerSize).setColor(PauseMenuView.UI_LIGHT_GRAY))
+                .setMargin(iconBorderSize, iconBorderSize).setContentFill(true, true).setVertical(false);
 
 
-        UI weaponStatNamesContainerLeft = new BlankUI()
-                .setPadding(10, 5).setContentFill(true, true).addToParent(weaponStatsContainer);
-        weaponStatNames = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
-        weaponStatNames.setTextAlign(Align.right, Align.top).addToParent(weaponStatNamesContainerLeft);
+        weaponInfoFrame.addChild(weaponInfoTitleContainer).addChild(weaponInfoStatsContainerBorder);
+        weaponInfoStatsContainerBorder.addChild(weaponInfoStatsContainer);
+
+        frameContainer.addChild("shadow", weaponInfoShadow).addChild("frame", weaponInfoFrame)
+                .setAllVisible(true);
 
 
-        UI weaponStatsTextSpacer = new RoundedRectUI(0, borderColor)
-                .setWidth(2).addToParent(weaponStatsContainer);
+
+        SwapperUI leftText = new SwapperUI();
+        UI centerLine = new UI().setWidth(2).setMargin(6, 6).setGraphicType(new RectGT().setColor(PauseMenuView.UI_DARK_GRAY));
+        SwapperUI rightText = new SwapperUI();
+
+        leftText.setMarginY(10);
+        rightText.setMarginY(10);
+
+        statNamesText = new TextUI("aaaa\nbbbbbbbb\ncccccc\ndddddddddd\neeee\nfff", FontManager.aireExterior24, PauseMenuView.UI_DARK_GRAY);
+        statNamesText.setTextAlign(Align.right, Align.top);
+
+        statValuesText = new TextUI("aaaa\nbbbbbbbb\ncccccc\ndddddddddd\neeee\nfff", FontManager.aireExterior24, PauseMenuView.UI_DARK_GRAY);
+        statValuesText.setTextAlign(Align.left, Align.top);
+
+        leftText.addChild("stat names", statNamesText).setAllVisible(false).setViewVisible("stat names", true);
+        rightText.addChild("stat values", statValuesText).setAllVisible(false).setViewVisible("stat values", true);
+
+        weaponInfoStatsContainer.addChild(leftText).addChild(centerLine).addChild(rightText);
 
 
-        weaponStatsRightSwapper = new SwapperUI();
-        weaponStatsRightSwapper.addToParent(weaponStatsContainer);
-
-        UI weaponStatValuesContainer = new BlankUI()
-                .setPadding(10, 5).setContentFill(true, true);
-        weaponStatValues = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
-        weaponStatValues.setTextAlign(Align.left, Align.top).addToParent(weaponStatValuesContainer);
-
-        UI weaponStatBaseValuesContainer = new BlankUI()
-                .setPadding(10, 5).setContentFill(true, true);
-        weaponStatBaseValues = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
-        weaponStatBaseValues.setTextAlign(Align.left, Align.top).addToParent(weaponStatBaseValuesContainer);
-
-
-        UI weaponStatRollsContainer = new BlankUI()
-                .setPadding(10, 5).setContentFill(true, true);
-        weaponStatRolls = new TextUI("aaaaa\nbbbbbb\nccc\ndddddd\neeeeee\nffff", FontManager.aireExterior24, textColor);
-        weaponStatRolls.setTextAlign(Align.right, Align.top).addToParent(weaponStatRollsContainer);
-
-
-        weaponStatsRightSwapper.addChild("values", weaponStatValuesContainer).addChild("base values", weaponStatBaseValuesContainer).addChild("rolls", weaponStatRollsContainer);
-        weaponStatsRightSwapper.setAllVisible(false).setViewVisible("values", true);
-
-        UI weaponInfoSpacer = new BlankUI().setHeight(verticalSpacing).addToParent(weaponInfo);
+        format();
     }
 
     public void setWeapon(Weapon weapon) {
-        this.weapon = weapon;
+        if(weapon != null && !weapon.equals(this.weapon)) {
+            Rarity rarity = weapon.getRarity();
+            weaponInfoFrame.getGraphicType().setColor(rarity.getMainColor());
 
-        if(weapon != null) {
-            weaponInfoTitle.setText(weapon.getName()).updateText();
-            //weaponInfoSubTitle.setText()
-            weaponStatNames.setText(weapon.getStatNamesString()).updateText();
-            weaponStatValues.setText(weapon.getStatValuesString()).updateText();
-            weaponStatBaseValues.setText(weapon.getStatBaseValuesString()).updateText();
-            weaponStatRolls.setText(weapon.getStatRollsString()).updateText();
+            weaponInfoTitle.setColor(rarity.getMainColor(),
+                    rarity.getMainColor().cpy().add(-0.08f, -0.08f, -0.08f, 0),
+                    rarity.getMainColor().cpy().add(-0.16f, -0.16f, -0.16f, 0),
+                    rarity.getTextColor());
+            weaponInfoStars.setColor(rarity.getTextColor());
 
-            weaponStatsButtonsContainer.removeChildren();
+            weaponInfoStatsContainerBorder.getGraphicType().setColor(rarity.getBorderColor());
 
-            for(final WeaponStat statType: weapon.getAvailableStats()) {
-                final Weapon w = weapon;
-                new RoundedRectButtonUI(0, makeGray(0, 0), makeGray(0, 0.15f), makeGray(0, 0.15f)) {
-                    public void press(double hoverTimer, double pressTimer) {
-                        if(!statPopup.isActive()) {
-                            showPopup();
-                        }
-                    }
-                    public void hold(double hoverTimer, double pressTimer) {}
-                    public void release(double hoverTimer, double pressTimer) {}
-                    public void mouseOver(double hoverTimer) {}
-                    public void hover(double hoverTimer) {
-                        if(!statPopup.isActive() && hoverTimer > popupHoverDelay) {
-                            showPopup();
-                        }
-                    }
-                    public void mouseLeave(double hoverTimer) {
-                        if(statPopup.isActive() && statPopup.getStatType() == statType) {
-                            statPopup.hide();
-                        }
-                    }
-                    private void showPopup() {
-                        statPopup.show(w, statType, getCenterX() + statPopupSide * getOuterWidth()/2, getCenterY() + getOuterHeight()/2, statPopupSide, -1);
-                    }
-                }.setHeight(21).addToParent(weaponStatsButtonsContainer);
-            }
-        } else {
-            weaponInfoTitle.setText("").updateText();
-            //weaponInfoSubTitle.setText()
-            weaponStatNames.setText("").updateText();
-            weaponStatValues.setText("").updateText();
-            weaponStatBaseValues.setText("").updateText();
-            weaponStatRolls.setText("").updateText();
+            weaponInfoTitle.setText(weapon.getName());
 
-            weaponStatsButtonsContainer.removeChildren();
+            statNamesText.setText(weapon.getStatNamesString());
+            statValuesText.setText(weapon.getStatValuesString());
         }
+
+        this.weapon = weapon;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
     }
 
     @Override
     public void update(double delta) {
-        if(InputManager.keyHeld(ControlMapping.SHIFT)) {
-            weaponStatsRightSwapper.setAllVisible(false).setViewVisible("base values", true).setViewVisible("rolls", true);
-        } else {
-            weaponStatsRightSwapper.setAllVisible(false).setViewVisible("values", true);
-        }
-
         updateChildren(delta);
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        drawChildren(batch);
-    }*/
+        //graphicType.setColor(currentColor).draw(batch, centerX, centerY, width, height);
+        if(weapon != null)
+            drawChildren(batch);
+    }
 }

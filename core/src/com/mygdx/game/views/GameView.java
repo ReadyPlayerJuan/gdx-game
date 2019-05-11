@@ -11,6 +11,7 @@ import com.mygdx.game.boards.BoardCamera;
 import com.mygdx.game.entities.EntityManager;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.entities.PlayerData;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.entities.enemies.Dummy;
 import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
@@ -30,17 +31,17 @@ public class GameView extends View {
     public GameView(View parentView, int width, int height) {
         super(parentView, width, height);
 
-        PlayerData.setEquippedWeapon(0, WeaponType.generateRandomWeapon());
-        PlayerData.setEquippedWeapon(1, WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
-        PlayerData.addWeaponToInventory(WeaponType.generateRandomWeapon());
+        PlayerData.setEquippedWeapon(0, WeaponType.generateWeapon());
+        PlayerData.setEquippedWeapon(1, WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
+        PlayerData.addWeaponToInventory(WeaponType.generateWeapon());
 
         pauseMenuView = new PauseMenuView(this, width, height);
 
@@ -56,11 +57,11 @@ public class GameView extends View {
         p.setBoardCamera(camera);
         camera.follow(p, 16);
 
-        new Dummy(100, 100);
-        new Dummy(100, 150);
-        new Dummy(100, 200);
-        new Dummy(100, 250);
-        new Dummy(100, 300);
+        new Dummy(100, 100, Rarity.WHITE, 1);
+        new Dummy(100, 150, Rarity.WHITE, 1);
+        new Dummy(100, 200, Rarity.WHITE, 1);
+        new Dummy(100, 250, Rarity.WHITE, 1);
+        new Dummy(100, 300, Rarity.WHITE, 1);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class GameView extends View {
     @Override
     public void preDraw() {
         gameFrameBuffer.bind();
-        Gdx.gl.glClearColor(1f, 1f, 1f, 1);
+        Gdx.gl.glClearColor(0.75f, 0.8f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT |
                 (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 

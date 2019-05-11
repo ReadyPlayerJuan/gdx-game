@@ -1,8 +1,8 @@
-package com.mygdx.game.weapons.stats;
+package com.mygdx.game.entities;
 
 import com.badlogic.gdx.graphics.Color;
 
-public enum WeaponRarity {
+public enum Rarity {
     WHITE   (0, new Color(1.00f, 1.00f, 1.00f, 1), new Color(0.50f, 0.50f, 0.50f, 1), new Color(0.00f, 0.00f, 0.00f, 1)),
     GREEN   (1, new Color(0.00f, 0.88f, 0.22f, 1), new Color(1.00f, 1.00f, 1.00f, 1), new Color(1.00f, 1.00f, 1.00f, 1)),
     BLUE    (2, new Color(0.28f, 0.30f, 0.91f, 1), new Color(1.00f, 1.00f, 1.00f, 1), new Color(1.00f, 1.00f, 1.00f, 1)),
@@ -17,7 +17,7 @@ public enum WeaponRarity {
     private double statMultiplier;
     private Color mainColor, borderColor, textColor;
 
-    WeaponRarity(double tier, Color mainColor, Color borderColor, Color textColor) {
+    Rarity(double tier, Color mainColor, Color borderColor, Color textColor) {
         this.statMultiplier = Math.pow(statMultiplierTierIncrease, tier);
         this.mainColor = mainColor;
         this.borderColor = borderColor;
@@ -38,5 +38,16 @@ public enum WeaponRarity {
 
     public Color getTextColor() {
         return textColor;
+    }
+
+    public Rarity neighboringRarity(int offset) {
+        Rarity[] rarities = Rarity.values();
+        int i;
+        for(i = 0; i < rarities.length; i++) {
+            if(rarities[i].equals(this))
+                break;
+        }
+        i = Math.max(0, Math.min(rarities.length-1, i + offset));
+        return rarities[i];
     }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.mygdx.game.entities.PlayerData;
 import com.mygdx.game.input.ControlMapping;
 import com.mygdx.game.input.InputManager;
 import com.mygdx.game.ui.elements.*;
@@ -16,6 +17,23 @@ import com.mygdx.game.weapons.Weapon;
 import static com.mygdx.game.util.Util.makeGray;
 
 public class PauseMenuView extends View {
+    public static final float TOP_BAR_HEIGHT = 80f;
+    public static final float WEAPON_ICON_WIDTH = 80f;
+    public static final float WEAPON_ICON_TITLE_HEIGHT = 20f;
+    public static final float WEAPON_ICON_HEIGHT = WEAPON_ICON_WIDTH + WEAPON_ICON_TITLE_HEIGHT;
+    public static final float WEAPON_INFO_WIDTH = 350f;
+    public static final float WEAPON_INFO_HEIGHT = 575f;
+    public static final float SHADOW_OFFSET = 4.0f;
+    public static final Color SHADOW_COLOR = makeGray(0, 0.65f);
+    public static final Color UI_LIGHT_GRAY = makeGray(0.85f, 1.0f);
+    public static final Color UI_DARK_GRAY = makeGray(0.30f, 1.0f);
+
+    private static final float TOP_BAR_ALPHA = 0.88f;
+    private static final Color TOP_BAR_COLOR = makeGray(0, TOP_BAR_ALPHA);
+    private static final Color TOP_BAR_BORDER_COLOR_1 = makeGray(0.2f, TOP_BAR_ALPHA);
+    private static final Color TOP_BAR_BORDER_COLOR_2 = makeGray(0.4f, TOP_BAR_ALPHA);
+
+
     private FrameBuffer frameBuffer;
     private SpriteBatch bufferBatch;
 
@@ -39,17 +57,6 @@ public class PauseMenuView extends View {
     private float offsetMoveSpeed = 4.0f;
     private float targetOffsetX, targetOffsetY, offsetX, offsetY;
 
-    public static final float TOP_BAR_HEIGHT = 80f;
-    public static final float WEAPON_ICON_WIDTH = 80f;
-    public static final float WEAPON_ICON_TITLE_HEIGHT = 20f;
-    public static final float WEAPON_ICON_HEIGHT = WEAPON_ICON_WIDTH + WEAPON_ICON_TITLE_HEIGHT;
-    public static final Color SHADOW_COLOR = makeGray(0, 0.65f);
-
-    private final float topBarAlpha = 0.88f;
-    private final Color topBarColor = makeGray(0, topBarAlpha);
-    private final Color topBarBorderColor1 = makeGray(0.2f, topBarAlpha);
-    private final Color topBarBorderColor2 = makeGray(0.4f, topBarAlpha);
-
     private final float UI_SCALE = 1.0f;
 
     public PauseMenuView(View parentView, int width, int height) {
@@ -69,17 +76,17 @@ public class PauseMenuView extends View {
         UI topBar = new UI().setHeight(TOP_BAR_HEIGHT * UI_SCALE).setContentFill(true, true)
                 .addToParent(foregroundParent);
         UI topBarContainer = new UI().setContentAlign(UI.BOTTOM, UI.LEFT).setPadding(10 * UI_SCALE, 10 * UI_SCALE)
-                .setGraphicType(new RectGT().setColor(topBarColor)).addToParent(topBar);
-        UI topBarBorder1 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor1)).addToParent(topBar);
-        UI topBarBorder2 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor2)).addToParent(topBar);
+                .setGraphicType(new RectGT().setColor(TOP_BAR_COLOR)).addToParent(topBar);
+        UI topBarBorder1 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(TOP_BAR_BORDER_COLOR_1)).addToParent(topBar);
+        UI topBarBorder2 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(TOP_BAR_BORDER_COLOR_2)).addToParent(topBar);
 
 
         UI botBar = new UI().setHeight(TOP_BAR_HEIGHT * UI_SCALE).setContentFill(true, true)
                 .addToParent(foregroundParent);
-        UI botBarBorder2 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor2)).addToParent(botBar);
-        UI botBarBorder1 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(topBarBorderColor1)).addToParent(botBar);
+        UI botBarBorder2 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(TOP_BAR_BORDER_COLOR_2)).addToParent(botBar);
+        UI botBarBorder1 = new UI().setHeight(4 * UI_SCALE).setGraphicType(new RectGT().setColor(TOP_BAR_BORDER_COLOR_1)).addToParent(botBar);
         UI botBarContainer = new UI().setContentAlign(UI.TOP, UI.LEFT).setPadding(10 * UI_SCALE, 10 * UI_SCALE)
-                .setGraphicType(new RectGT().setColor(topBarColor)).addToParent(botBar);
+                .setGraphicType(new RectGT().setColor(TOP_BAR_COLOR)).addToParent(botBar);
 
 
         backgroundParent.format();
@@ -92,10 +99,11 @@ public class PauseMenuView extends View {
         inventory = new InventoryUI(UI_SCALE, this);
         inventory.format();
 
-        //grabbedWeaponIcon = new WeaponIconUI(this, WEAPON_ICON_WIDTH, WEAPON_ICON_HEIGHT, WEAPON_ICON_TITLE_HEIGHT);
+        weaponInfo1 = new WeaponInfoUI(UI_SCALE, this, WEAPON_INFO_WIDTH, WEAPON_INFO_HEIGHT);
+        weaponInfo1.setWeapon(PlayerData.getEquippedWeapon(0));
 
-        //weaponLeftInfo.setWeapon(PlayerData.getEquippedWeapon(0));
-        //weaponRightInfo.setWeapon(PlayerData.getEquippedWeapon(1));
+        weaponInfo2 = new WeaponInfoUI(UI_SCALE, this, WEAPON_INFO_WIDTH, WEAPON_INFO_HEIGHT);
+        weaponInfo2.setWeapon(PlayerData.getEquippedWeapon(1));
     }
 
     @Override
@@ -110,6 +118,12 @@ public class PauseMenuView extends View {
 
         inventory.setActive(focused);
         inventory.update(0);
+
+        weaponInfo1.setActive(true);
+        weaponInfo1.update(0);
+
+        weaponInfo2.setActive(true);
+        weaponInfo2.update(0);
 
         foregroundParent.setActive(focused);
         foregroundParent.update(0);
@@ -137,12 +151,21 @@ public class PauseMenuView extends View {
             backgroundParent.update(delta);
             //backgroundParent.format();
 
+            weaponInfo1.setWeapon(PlayerData.getEquippedWeapon(0));
+            weaponInfo1.setPosition(width * 0.3f + (int)offsetX, height * 0.5f + (int)offsetY);
+            weaponInfo1.format();
+            weaponInfo1.update(delta);
 
-            equippedWeapons.setPosition(width * (1f / 3) + (int) offsetX, height / 2 + (int) offsetY);
+            weaponInfo2.setWeapon(PlayerData.getEquippedWeapon(1));
+            weaponInfo2.setPosition(width * 0.0f + (int)offsetX, height * 0.5f + (int)offsetY);
+            weaponInfo2.format();
+            weaponInfo2.update(delta);
+
+            equippedWeapons.setPosition(width * 0.5f + (int)offsetX, height * 0.5f + (int)offsetY);
             equippedWeapons.format();
             equippedWeapons.update(delta);
 
-            inventory.setPosition(width * (2f / 3) + (int) offsetX, height / 2 + (int) offsetY);
+            inventory.setPosition(width * 0.75f + (int)offsetX, height * 0.5f + (int)offsetY);
             inventory.format();
             inventory.update(delta);
 
@@ -199,7 +222,7 @@ public class PauseMenuView extends View {
     }
 
     private void grabIcon(WeaponIconUI icon) {
-        System.out.println("grabbed");
+        //System.out.println("grabbed");
         grabbedWeaponIcon = new WeaponIconUI(null, null, WEAPON_ICON_WIDTH, WEAPON_ICON_HEIGHT, WEAPON_ICON_TITLE_HEIGHT);
         grabbedWeaponIcon.setWeapon(icon.getWeapon());
         grabbedWeaponOrigin = icon.setWeapon(null);
@@ -218,7 +241,7 @@ public class PauseMenuView extends View {
             target.update(0);
 
             if(temp != null) {
-                System.out.println("swapped");
+                //System.out.println("swapped");
 
                 grabbedWeaponOrigin.setWeapon(temp);
                 grabbedWeaponOrigin.setOffset(
@@ -228,12 +251,12 @@ public class PauseMenuView extends View {
                 grabbedWeaponOrigin.update(0);
                 grabbedWeaponOrigin.moveToFront();
             } else {
-                System.out.println("dropped");
+                //System.out.println("dropped");
             }
 
             target.moveToFront();
         } else {
-            System.out.println("returned");
+            //System.out.println("returned");
 
             grabbedWeaponOrigin.setWeapon(grabbedWeaponIcon.getWeapon());
             grabbedWeaponOrigin.setOffset(
@@ -243,10 +266,24 @@ public class PauseMenuView extends View {
             grabbedWeaponOrigin.update(0);
             grabbedWeaponOrigin.moveToFront();
         }
+
         equippedWeapons.updateEquippedWeapons();
+        inventory.updateInventoryWeapons();
 
         grabbedWeaponIcon = null;
         grabbedWeaponOrigin = null;
+    }
+
+    public void updateWeaponData(Weapon weapon) {
+        if(weaponInfo1.getWeapon().equals(weapon)) {
+            weaponInfo1.setWeapon(null);
+            weaponInfo1.setWeapon(weapon);
+        } else if(weaponInfo2.getWeapon().equals(weapon)) {
+            weaponInfo2.setWeapon(null);
+            weaponInfo2.setWeapon(weapon);
+        }
+        equippedWeapons.updateWeaponIcon(weapon);
+        inventory.updateWeaponIcon(weapon);
     }
 
     @Override
@@ -265,6 +302,8 @@ public class PauseMenuView extends View {
         /*if(statPopup.isActive()) {
             statPopup.draw(batch);
         }*/
+            weaponInfo1.draw(bufferBatch);
+            weaponInfo2.draw(bufferBatch);
 
             equippedWeapons.draw(bufferBatch);
 

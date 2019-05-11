@@ -1,7 +1,6 @@
 package com.mygdx.game.entities.projectiles;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.entities.hitboxes.BodyHitbox;
@@ -14,7 +13,7 @@ import com.mygdx.game.weapons.WeaponController;
 import static java.lang.Math.floor;
 
 public class TestProjectile extends Projectile {
-    //private Animation<TextureRegion> animation;
+    private TextureRegion textureRegion;
     private float animationTimer = 0;
 
     private DamagerHitbox hitbox;
@@ -37,7 +36,7 @@ public class TestProjectile extends Projectile {
     //inherited: protected DamagerHitbox[] damagerHitboxes = new DamagerHitbox[0];
     //inherited: protected double terrainCollisionRadius = -1;
 
-    public TestProjectile(WeaponController source, Weapon weaponSource, TextureData texture, double x, double y, double dmg, double spd, double ang, double rad, double kbck) {
+    public TestProjectile(WeaponController source, Weapon weaponSource, double x, double y, double dmg, double spd, double ang, double rad, double kbck) {
         super(source, weaponSource);
         this.x = x;
         this.y = y;
@@ -48,8 +47,7 @@ public class TestProjectile extends Projectile {
         this.knockback = kbck;
         this.terrainCollisionRadius = radius;
 
-        //animation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
-        //animation.setPlayMode(Animation.PlayMode.LOOP);
+        textureRegion = TextureManager.getTextureRegion(TextureData.SHAPES, 8);
 
         hitbox = new DamagerHitbox(this, team, radius) {
             @Override
@@ -86,16 +84,18 @@ public class TestProjectile extends Projectile {
 
     @Override
     public void draw(SpriteBatch batch) {
-        /*batch.draw(animation.getKeyFrame(animationTimer),
-                (float)(x-radius),
-                (float)(y-radius),
-                (float)radius,
-                (float)radius,
-                (float)radius*2,
-                (float)radius*2,
+        double textureRadius = radius * 0.8;
+        batch.setColor(Color.BLACK);
+        batch.draw(textureRegion,
+                (float)(x-textureRadius),
+                (float)(y-textureRadius),
+                (float)textureRadius,
+                (float)textureRadius,
+                (float)textureRadius*2,
+                (float)textureRadius*2,
                 1f,
                 1f,
-                0);*/
+                0);
     }
 
     @Override

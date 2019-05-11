@@ -1,9 +1,9 @@
 package com.mygdx.game.entities.enemies;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.mygdx.game.entities.Entity;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.entities.Team;
 import com.mygdx.game.entities.hitboxes.BodyHitbox;
 import com.mygdx.game.textures.TextureData;
@@ -14,12 +14,12 @@ import static java.lang.Math.*;
 import static java.lang.Math.abs;
 
 public class Dummy extends Enemy {
-    //private Animation<TextureRegion> idleAnimation;
+    private TextureRegion innerTexture, outerTexture;
     private float animationTimer = 0;
 
     private BodyHitbox hitbox;
 
-    private final double maxHealth = 30;
+    private double maxHealth = 30;
     private double health = maxHealth;
     private double radius = 20;
     private double accel = 1500;
@@ -29,13 +29,13 @@ public class Dummy extends Enemy {
     private double pushVelX = 0;
     private double pushVelY = 0;
 
-    public Dummy(double x, double y) {
-        super(Team.ENEMY, 0, 1, x, y);
+    public Dummy(double x, double y, Rarity rarity, double lootQuantityMultiplier) {
+        super(Team.ENEMY, rarity, true, 1.0 * lootQuantityMultiplier, x, y);
 
         terrainCollisionRadius = radius;
 
-        //idleAnimation = TextureManager.makeAnimation(TextureData.PLAYER_SHEET, 0, 4, 1f);
-        //idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        outerTexture = TextureManager.getTextureRegion(TextureData.SHAPES, 5);
+        innerTexture = TextureManager.getTextureRegion(TextureData.SHAPES, 8);
 
         hitbox = new BodyHitbox(this, team, radius) {
             @Override
@@ -95,16 +95,32 @@ public class Dummy extends Enemy {
 
     @Override
     public void draw(SpriteBatch batch) {
-        /*batch.draw(idleAnimation.getKeyFrame(animationTimer),
-                (float)(x-radius),
-                (float)(y-radius),
-                (float)radius,
-                (float)radius,
-                (float)radius*2,
-                (float)radius*2,
+        double outerTextureRadius = radius * 0.85;
+        double innerTextureRadius = radius * 0.75;
+
+        batch.setColor(rarity.getMainColor());
+        batch.draw(outerTexture,
+                (float)(x-outerTextureRadius),
+                (float)(y-outerTextureRadius),
+                (float)outerTextureRadius,
+                (float)outerTextureRadius,
+                (float)outerTextureRadius*2,
+                (float)outerTextureRadius*2,
                 1f,
                 1f,
-                0);*/
+                0);
+        batch.setColor(Color.BLACK);
+        batch.draw(innerTexture,
+                (float)(x-innerTextureRadius),
+                (float)(y-innerTextureRadius),
+                (float)innerTextureRadius,
+                (float)innerTextureRadius,
+                (float)innerTextureRadius*2,
+                (float)innerTextureRadius*2,
+                1f,
+                1f,
+                0);
+        batch.setColor(Color.WHITE);
     }
 
     @Override

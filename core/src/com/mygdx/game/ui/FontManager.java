@@ -11,6 +11,7 @@ public class FontManager {
     public static BitmapFont aireExterior24;
     public static BitmapFont aireExterior36;
     public static BitmapFont aireExterior48;
+    public static BitmapFont aireExterior64;
 
     public static void init() {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("AireExterior.ttf"));
@@ -36,12 +37,19 @@ public class FontManager {
         aireExterior48 = generator.generateFont(parameter);
         //aireExterior48.getData().markupEnabled = true;
 
+        parameter.size = 64;
+        aireExterior64 = generator.generateFont(parameter);
+        //aireExterior64.getData().markupEnabled = true;
+
         generator.dispose();
     }
 
     public static void dispose() {
+        aireExterior12.dispose();
+        aireExterior18.dispose();
         aireExterior24.dispose();
         aireExterior36.dispose();
         aireExterior48.dispose();
+        aireExterior64.dispose();
     }
 }

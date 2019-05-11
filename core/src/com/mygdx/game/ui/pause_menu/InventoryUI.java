@@ -12,6 +12,7 @@ public class InventoryUI extends UI implements WeaponIconContainer {
     private final PauseMenuView pauseMenuView;
     private final float UI_SCALE;
     private final float padding = 6.0f;
+    private int currentPage = 0;
     //private final float shadowOffset = 4.0f;
 
     private WeaponIconUI[] weaponIcons;
@@ -53,11 +54,31 @@ public class InventoryUI extends UI implements WeaponIconContainer {
     }
 
     private void setPage(int page) {
+        currentPage = page;
         Weapon[] inventory = PlayerData.getInventory();
         for(int r = 0; r < PlayerData.INVENTORY_HEIGHT; r++) {
             for(int c = 0; c < PlayerData.INVENTORY_WIDTH; c++) {
                 weaponIcons[(r * PlayerData.INVENTORY_WIDTH) + c].setWeapon(
                         inventory[(page * PlayerData.INVENTORY_WIDTH * PlayerData.INVENTORY_HEIGHT) + (r * PlayerData.INVENTORY_WIDTH) + c]);
+            }
+        }
+    }
+
+    public void updateInventoryWeapons() {
+        for(int r = 0; r < PlayerData.INVENTORY_HEIGHT; r++) {
+            for(int c = 0; c < PlayerData.INVENTORY_WIDTH; c++) {
+                PlayerData.setInventoryWeapon((currentPage * PlayerData.INVENTORY_WIDTH * PlayerData.INVENTORY_HEIGHT) + (r * PlayerData.INVENTORY_WIDTH) + c,
+                        weaponIcons[(r * PlayerData.INVENTORY_WIDTH) + c].getWeapon());
+            }
+        }
+    }
+
+    public void updateWeaponIcon(Weapon weapon) {
+        for(WeaponIconUI icon: weaponIcons) {
+            if(icon.getWeapon() != null && icon.getWeapon().equals(weapon)) {
+                icon.setWeapon(null);
+                icon.setWeapon(weapon);
+                break;
             }
         }
     }

@@ -40,6 +40,10 @@ public class PlayerData {
         return true;
     }
 
+    public static void setInventoryWeapon(int slot, Weapon weapon) {
+        inventory[slot] = weapon;
+    }
+
     public static Weapon[] getInventory() {
         return inventory;
     }

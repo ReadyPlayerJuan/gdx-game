@@ -6,14 +6,19 @@ import com.mygdx.game.weapons.Weapon;
 import com.mygdx.game.weapons.WeaponController;
 import com.mygdx.game.weapons.WeaponGenerator;
 import com.mygdx.game.weapons.WeaponType;
-import com.mygdx.game.weapons.stats.WeaponRarity;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
 public class AssaultRifle extends Weapon {
     public static WeaponGenerator generator = new WeaponGenerator() {
         @Override
         public Weapon generateWeapon() {
-            return new AssaultRifle(WeaponRarity.values()[(int)(Math.random() * WeaponRarity.values().length)]);
+            return generateWeapon(Rarity.values()[(int)(Math.random() * Rarity.values().length)]);
+        }
+
+        @Override
+        public Weapon generateWeapon(Rarity rarity) {
+            return new AssaultRifle(Rarity.values()[(int)(Math.random() * Rarity.values().length)]);
         }
     };
 
@@ -30,19 +35,19 @@ public class AssaultRifle extends Weapon {
     }
     private static final double[][] defaultStats() {
         return new double[][]{
-                {7.0, 1.5},      //DAMAGE
-                {575, 75},       //BULLET SPEED
-                {11.0, 1.5},     //BULLET SIZE
-                {175, 50},       //BULLET KNOCKBACK
-                {0.040, 0.01},   //WEAPON SPREAD
-                {5.50, 1.25},    //WEAPON FIRE RATE
-                {125.0, 25.0},   //WEAPON KICK
+                {7.5, 3.0},      //DAMAGE
+                {575, 200},      //BULLET SPEED
+                {11.0, 3.0},     //BULLET SIZE
+                {175, 100},      //BULLET KNOCKBACK
+                {0.040, 0.020},  //WEAPON SPREAD
+                {5.50, 2.5},     //WEAPON FIRE RATE
+                {125.0, 80.0},   //WEAPON KICK
         };
     }
 
     private double fireTimer = 0;
 
-    public AssaultRifle(WeaponRarity rarity) {
+    public AssaultRifle(Rarity rarity) {
         super(WeaponType.ASSAULT_RIFLE, rarity, TextureData.WEAPONS, 3, availableStats(), defaultStats());
 
         randomizeVariationRolls();
@@ -75,7 +80,7 @@ public class AssaultRifle extends Weapon {
 
         controller.kick(angle + Math.PI, stats[6][1]);
 
-        new TestProjectile(controller, this, null,//TextureData.PLAYER_SHEET,
+        new TestProjectile(controller, this, //null,//TextureData.PLAYER_SHEET,
                 controller.getX(), controller.getY(),
                 stats[0][1],   //damage
                 stats[1][1],   //speed

@@ -3,13 +3,13 @@ package com.mygdx.game.weapons;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.textures.TextureData;
 import com.mygdx.game.textures.TextureManager;
-import com.mygdx.game.weapons.stats.WeaponRarity;
+import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 import com.mygdx.game.weapons.stats.WeaponStatType;
 
 public abstract class Weapon {
     protected WeaponType type;
-    protected WeaponRarity rarity;
+    protected Rarity rarity;
     protected TextureRegion texture;
     protected WeaponStat[] availableStats;
     protected double[][] defaultStats;
@@ -23,7 +23,7 @@ public abstract class Weapon {
     protected String statBaseValues = "";
     protected String statRolls = "";
 
-    public Weapon(WeaponType type, WeaponRarity rarity, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
+    public Weapon(WeaponType type, Rarity rarity, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
         this.type = type;
         this.rarity = rarity;
         this.name = type.getName();
@@ -42,9 +42,11 @@ public abstract class Weapon {
 
     protected void initStats() {
         double multiplier = rarity.getStatMultiplier();
-        for(double[] d: defaultStats) {
-            for(int i = 0; i < d.length; i++) {
-                d[i] *= multiplier;
+        for(int i = 0; i < availableStats.length; i++) {
+            if(availableStats[i].isAffectedByRarity()) {
+                for(int j = 0; j < defaultStats[i].length; j++) {
+                    defaultStats[i][j] *= multiplier;
+                }
             }
         }
 
@@ -156,7 +158,7 @@ public abstract class Weapon {
         return type;
     }
 
-    public WeaponRarity getRarity() {
+    public Rarity getRarity() {
         return rarity;
     }
 
