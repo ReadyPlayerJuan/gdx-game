@@ -10,8 +10,8 @@ public abstract class ButtonUI extends UI {
     protected Color defaultColor, hoverColor, pressColor;
     protected boolean hover = false, prevHover = false;
     protected double hoverTimer = 0;
-    protected boolean pressed = false, prevPressed = false;
-    protected double pressTimer = 0;
+    protected boolean pressedLeft = false, prevPressedLeft = false, pressedRight = false, prevPressedRight = false;
+    protected double pressTimerLeft = 0, pressTimerRight = 0;
 
     protected Color currentColor;
     protected boolean pressable = true;
@@ -37,18 +37,22 @@ public abstract class ButtonUI extends UI {
         double mouseX = InputManager.getMouseX();
         double mouseY = InputManager.getFlippedMouseY();
         prevHover = hover;
-        prevPressed = pressed;
+        prevPressedLeft = pressedLeft;
+        prevPressedRight = pressedRight;
         if(active && mouseX > centerX - width/2 && mouseX <= centerX + width/2 && mouseY > centerY - height/2 && mouseY <= centerY + height/2) {
             hover = true;
 
-            if(pressable && (InputManager.keyPressed(ControlMapping.CLICK_LEFT) || (prevPressed && InputManager.keyHeld(ControlMapping.CLICK_LEFT)))) {
-                pressed = true;
-            } else {
-                pressed = false;
-            }
+            pressedLeft = (pressable &&
+                    (InputManager.keyPressed(ControlMapping.CLICK_LEFT) ||
+                    (prevPressedLeft && InputManager.keyHeld(ControlMapping.CLICK_LEFT))));
+
+            pressedRight = (pressable &&
+                    (InputManager.keyPressed(ControlMapping.CLICK_RIGHT) ||
+                            (prevPressedRight && InputManager.keyHeld(ControlMapping.CLICK_RIGHT))));
         } else {
             hover = false;
-            pressed = false;
+            pressedLeft = false;
+            pressedRight = false;
         }
 
         if(hover) {
@@ -58,16 +62,28 @@ public abstract class ButtonUI extends UI {
                 hover(hoverTimer);
             hoverTimer += delta;
 
-            if(pressed) {
-                if(!prevPressed)
-                    press(hoverTimer, pressTimer);
+            if(pressedLeft) {
+                if(!prevPressedLeft)
+                    press(0, hoverTimer, pressTimerLeft);
                 else
-                    hold(hoverTimer, pressTimer);
-                pressTimer += delta;
-            } else if(prevPressed) {
-                release(hoverTimer, pressTimer);
+                    hold(0, hoverTimer, pressTimerLeft);
+                pressTimerLeft += delta;
+            } else if(prevPressedLeft) {
+                release(0, hoverTimer, pressTimerLeft);
 
-                pressTimer = 0;
+                pressTimerLeft = 0;
+            }
+
+            if(pressedRight) {
+                if(!prevPressedRight)
+                    press(1, hoverTimer, pressTimerRight);
+                else
+                    hold(1, hoverTimer, pressTimerRight);
+                pressTimerRight += delta;
+            } else if(prevPressedRight) {
+                release(1, hoverTimer, pressTimerRight);
+
+                pressTimerRight = 0;
             }
         } else if(prevHover) {
             mouseLeave(hoverTimer);
@@ -75,7 +91,7 @@ public abstract class ButtonUI extends UI {
             hoverTimer = 0;
         }
 
-        if(pressed)
+        if(pressedLeft || pressedRight)
             currentColor = pressColor;
         else if(hover)
             currentColor = hoverColor;
@@ -89,10 +105,14 @@ public abstract class ButtonUI extends UI {
         drawChildren(batch);
     }
 
-    public abstract void press(double hoverTimer, double pressTimer);
-    public abstract void hold(double hoverTimer, double pressTimer);
-    public abstract void release(double hoverTimer, double pressTimer);
+    public abstract void press(int button, double hoverTimer, double pressTimer);
+    public abstract void hold(int button, double hoverTimer, double pressTimer);
+    public abstract void release(int button, double hoverTimer, double pressTimer);
     public abstract void mouseOver(double hoverTimer);
     public abstract void hover(double hoverTimer);
     public abstract void mouseLeave(double hoverTimer);
+
+    public boolean isHover() {
+        return hover;
+    }
 }

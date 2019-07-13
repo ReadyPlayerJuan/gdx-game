@@ -181,18 +181,18 @@ public abstract class EditableTextUI extends ButtonUI implements Typeable {
     }
 
     @Override
-    public void press(double hoverTimer, double pressTimer) {
+    public void press(int button, double hoverTimer, double pressTimer) {
         selected = true;
         InputManager.setTypingTarget(this);
     }
 
     @Override
-    public void hold(double hoverTimer, double pressTimer) {
+    public void hold(int button, double hoverTimer, double pressTimer) {
 
     }
 
     @Override
-    public void release(double hoverTimer, double pressTimer) {
+    public void release(int button, double hoverTimer, double pressTimer) {
 
     }
 

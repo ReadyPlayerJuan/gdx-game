@@ -2,10 +2,7 @@ package com.mygdx.game.weapons.guns;
 
 import com.mygdx.game.entities.projectiles.TestProjectile;
 import com.mygdx.game.textures.TextureData;
-import com.mygdx.game.weapons.Weapon;
-import com.mygdx.game.weapons.WeaponController;
-import com.mygdx.game.weapons.WeaponGenerator;
-import com.mygdx.game.weapons.WeaponType;
+import com.mygdx.game.weapons.*;
 import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
@@ -48,7 +45,7 @@ public class AssaultRifle extends Weapon {
     private double fireTimer = 0;
 
     public AssaultRifle(Rarity rarity) {
-        super(WeaponType.ASSAULT_RIFLE, rarity, TextureData.WEAPONS, 3, availableStats(), defaultStats());
+        super(WeaponType.ASSAULT_RIFLE, rarity, WeaponStarRating.random(), TextureData.WEAPONS, 3, availableStats(), defaultStats());
 
         randomizeVariationRolls();
         initStats();

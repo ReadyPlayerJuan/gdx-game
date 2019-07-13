@@ -12,6 +12,7 @@ import com.mygdx.game.input.InputManager;
 import com.mygdx.game.ui.elements.*;
 import com.mygdx.game.ui.graphic_types.RectGT;
 import com.mygdx.game.ui.pause_menu.*;
+import com.mygdx.game.ui.pause_menu.PopupUI;
 import com.mygdx.game.weapons.Weapon;
 
 import static com.mygdx.game.util.Util.makeGray;
@@ -41,6 +42,7 @@ public class PauseMenuView extends View {
     private EquippedWeaponsUI equippedWeapons;
     private InventoryUI inventory;
     private WeaponInfoUI weaponInfo1, weaponInfo2;
+    private PopupUI optionPopup;
     private WeaponStatPopupUI statPopup;
 
     private boolean mousePressed, prevMousePressed;
@@ -68,7 +70,7 @@ public class PauseMenuView extends View {
         //statPopup = new WeaponStatPopupUI(this, cornerSize, borderSize, bodyColor, darkBodyColor, borderColor, textColor);
         backgroundParent = new UI().setSize(width, height).setPosition(width/2, height/2)
                 .setContentFill(true, true)
-                .setGraphicType(new RectGT().setColor(makeGray(0.4f, 0.5f)));
+                .setGraphicType(new RectGT().setColor(makeGray(0.6f, 0.8f)));
 
 
         foregroundParent = new UI().setSize(width, height).setPosition(width/2, height/2)
@@ -119,10 +121,10 @@ public class PauseMenuView extends View {
         inventory.setActive(focused);
         inventory.update(0);
 
-        weaponInfo1.setActive(true);
+        weaponInfo1.setActive(focused);
         weaponInfo1.update(0);
 
-        weaponInfo2.setActive(true);
+        weaponInfo2.setActive(focused);
         weaponInfo2.update(0);
 
         foregroundParent.setActive(focused);
@@ -152,7 +154,7 @@ public class PauseMenuView extends View {
             //backgroundParent.format();
 
             weaponInfo1.setWeapon(PlayerData.getEquippedWeapon(0));
-            weaponInfo1.setPosition(width * 0.3f + (int)offsetX, height * 0.5f + (int)offsetY);
+            weaponInfo1.setPosition(width * 0.25f + (int)offsetX, height * 0.5f + (int)offsetY);
             weaponInfo1.format();
             weaponInfo1.update(delta);
 
@@ -183,25 +185,44 @@ public class PauseMenuView extends View {
             }
             recentlyGrabbedIcon = false;
 
+            if(optionPopup != null) {
+                optionPopup.update(delta);
+                if(optionPopup.shouldBeDestroyed())
+                    optionPopup = null;
+            }
+
 
             foregroundParent.update(delta);
             //foregroundParent.format();
         }
     }
 
-    public void pressIcon(WeaponIconUI icon, double hoverTimer, double pressTimer) {
+    public void pressIcon(WeaponIconUI icon, int button, double hoverTimer, double pressTimer) {
 
     }
 
-    public void holdIcon(WeaponIconUI icon, double hoverTimer, double pressTimer) {
+    public void holdIcon(WeaponIconUI icon, int button, double hoverTimer, double pressTimer) {
 
     }
 
-    public void releaseIcon(WeaponIconUI icon, double hoverTimer, double pressTimer) {
-        if(grabbedWeaponIcon == null && icon.getWeapon() != null) {
-            grabIcon(icon);
-        } else if(grabbedWeaponIcon != null && !recentlyGrabbedIcon) {
-            dropIcon(icon);
+    public void releaseIcon(WeaponIconUI icon, int button, double hoverTimer, double pressTimer) {
+        if(button == 0) {
+            //left click
+            if(optionPopup == null) {
+                if(grabbedWeaponIcon == null && icon.getWeapon() != null) {
+                    grabIcon(icon);
+                } else if(grabbedWeaponIcon != null && !recentlyGrabbedIcon) {
+                    dropIcon(icon);
+                }
+            }
+        } else {
+            //right click
+            optionPopup = new PopupUI(icon.getWeaponIconButton(), "TEST 1", "TEST 2 BABYY") {
+                @Override
+                public void press(int option) {
+                    System.out.println("Chose " + option);
+                }
+            };
         }
     }
 
@@ -303,7 +324,7 @@ public class PauseMenuView extends View {
             statPopup.draw(batch);
         }*/
             weaponInfo1.draw(bufferBatch);
-            weaponInfo2.draw(bufferBatch);
+            //weaponInfo2.draw(bufferBatch);
 
             equippedWeapons.draw(bufferBatch);
 
@@ -311,6 +332,9 @@ public class PauseMenuView extends View {
 
             if(grabbedWeaponIcon != null)
                 grabbedWeaponIcon.drawReal(bufferBatch);
+
+            if(optionPopup != null)
+                optionPopup.draw(bufferBatch);
 
 
             foregroundParent.draw(bufferBatch);

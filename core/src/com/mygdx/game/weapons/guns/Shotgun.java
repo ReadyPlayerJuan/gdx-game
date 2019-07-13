@@ -2,10 +2,7 @@ package com.mygdx.game.weapons.guns;
 
 import com.mygdx.game.entities.projectiles.TestProjectile;
 import com.mygdx.game.textures.TextureData;
-import com.mygdx.game.weapons.Weapon;
-import com.mygdx.game.weapons.WeaponController;
-import com.mygdx.game.weapons.WeaponGenerator;
-import com.mygdx.game.weapons.WeaponType;
+import com.mygdx.game.weapons.*;
 import com.mygdx.game.entities.Rarity;
 import com.mygdx.game.weapons.stats.WeaponStat;
 
@@ -51,7 +48,7 @@ public class Shotgun extends Weapon {
     private double fireTimer = 0;
 
     public Shotgun(Rarity rarity) {
-        super(WeaponType.SHOTGUN, rarity, TextureData.WEAPONS, 2, availableStats(), defaultStats());
+        super(WeaponType.SHOTGUN, rarity, WeaponStarRating.random(), TextureData.WEAPONS, 2, availableStats(), defaultStats());
 
         randomizeVariationRolls();
         initStats();
@@ -80,16 +77,17 @@ public class Shotgun extends Weapon {
 
     protected void fire(double delta, WeaponController controller) {
         double angle = Math.atan2(controller.getTargetY(), controller.getTargetX());
+        System.out.println(angle);
         double maxAngleVariation = Math.toRadians(180) * stats[5][1];
 
         int numBullets = (int)(stats[1][1] + Math.random());
-        double individualAngleVariation = maxAngleVariation * (1.0 / numBullets+1);
+        double individualAngleVariation = 2 * maxAngleVariation * (1.0 / (numBullets+1));
 
         controller.kick(angle + Math.PI, stats[7][1]);
 
 
         for(int i = 0; i < numBullets; i++) {
-            double variedAngle = angle - maxAngleVariation + individualAngleVariation*i * Math.random() * individualAngleVariation;
+            double variedAngle = angle - maxAngleVariation + individualAngleVariation * (i + Math.random());
 
             new TestProjectile(controller, this, //null,//TextureData.PLAYER_SHEET,
                     controller.getX(), controller.getY(),

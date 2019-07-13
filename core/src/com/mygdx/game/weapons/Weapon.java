@@ -10,6 +10,7 @@ import com.mygdx.game.weapons.stats.WeaponStatType;
 public abstract class Weapon {
     protected WeaponType type;
     protected Rarity rarity;
+    protected WeaponStarRating starRating;
     protected TextureRegion texture;
     protected WeaponStat[] availableStats;
     protected double[][] defaultStats;
@@ -23,9 +24,10 @@ public abstract class Weapon {
     protected String statBaseValues = "";
     protected String statRolls = "";
 
-    public Weapon(WeaponType type, Rarity rarity, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
+    public Weapon(WeaponType type, Rarity rarity, WeaponStarRating starRating, TextureData textureSheet, int textureIndex, WeaponStat[] availableStats, double[][] defaultStats) {
         this.type = type;
         this.rarity = rarity;
+        this.starRating = starRating;
         this.name = type.getName();
         this.texture = TextureManager.getTextureRegion(textureSheet, textureIndex);
         //this.elementalWeights = elementalWeights;
@@ -160,6 +162,10 @@ public abstract class Weapon {
 
     public Rarity getRarity() {
         return rarity;
+    }
+
+    public WeaponStarRating getStarRating() {
+        return starRating;
     }
 
     public TextureRegion getTexture() {

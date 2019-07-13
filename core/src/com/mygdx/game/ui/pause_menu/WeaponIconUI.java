@@ -62,12 +62,12 @@ public class WeaponIconUI extends FloaterUI {
         if(pauseMenuView != null) {
             final WeaponIconUI icon = this;
             weaponIconButton = new ButtonUI(makeGray(0, 0), makeGray(0, 0.1f), makeGray(0, 0.2f), new RectGT()) {
-                public void press(double hoverTimer, double pressTimer)     { pauseMenuView.pressIcon(icon, hoverTimer, pressTimer); }
-                public void hold(double hoverTimer, double pressTimer)      { pauseMenuView.holdIcon(icon, hoverTimer, pressTimer); }
-                public void release(double hoverTimer, double pressTimer)   { pauseMenuView.releaseIcon(icon, hoverTimer, pressTimer); }
-                public void mouseOver(double hoverTimer)                    { pauseMenuView.mouseOverIcon(icon, hoverTimer); }
-                public void hover(double hoverTimer)                        { pauseMenuView.hoverIcon(icon, hoverTimer); }
-                public void mouseLeave(double hoverTimer)                   { pauseMenuView.mouseLeaveIcon(icon, hoverTimer); }
+                public void press(int button, double hoverTimer, double pressTimer)     { pauseMenuView.pressIcon(icon, button, hoverTimer, pressTimer); }
+                public void hold(int button, double hoverTimer, double pressTimer)      { pauseMenuView.holdIcon(icon, button, hoverTimer, pressTimer); }
+                public void release(int button, double hoverTimer, double pressTimer)   { pauseMenuView.releaseIcon(icon, button, hoverTimer, pressTimer); }
+                public void mouseOver(double hoverTimer)                                { pauseMenuView.mouseOverIcon(icon, hoverTimer); }
+                public void hover(double hoverTimer)                                    { pauseMenuView.hoverIcon(icon, hoverTimer); }
+                public void mouseLeave(double hoverTimer)                               { pauseMenuView.mouseLeaveIcon(icon, hoverTimer); }
             };//.setContentFill(true, true);//.addToParent(weaponIcon);
         }
 
@@ -129,7 +129,7 @@ public class WeaponIconUI extends FloaterUI {
             weaponIconSpriteContainer.format();
 
             weaponIconStarContainer.removeChildren();
-            weaponIconStarContainer.addChild(new TextUI("***", FontManager.aireExterior48, rarity.getMainColor()).setShadow(rarity.getTextColor(), 1, -1));
+            weaponIconStarContainer.addChild(new TextUI(weapon.getStarRating().getStarString(), FontManager.aireExterior48, rarity.getMainColor()).setShadow(rarity.getTextColor(), 1, -1));
             weaponIconStarContainer.format();
 
             format();
@@ -137,6 +137,10 @@ public class WeaponIconUI extends FloaterUI {
 
         this.weapon = weapon;
         return this;
+    }
+
+    public ButtonUI getWeaponIconButton() {
+        return weaponIconButton;
     }
 
     @Override

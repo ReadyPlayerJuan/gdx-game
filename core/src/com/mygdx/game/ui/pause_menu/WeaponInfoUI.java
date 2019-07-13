@@ -111,15 +111,13 @@ public class WeaponInfoUI extends UI {
             Rarity rarity = weapon.getRarity();
             weaponInfoFrame.getGraphicType().setColor(rarity.getMainColor());
 
-            weaponInfoTitle.setColor(rarity.getMainColor(),
+            weaponInfoTitle.setText(weapon.getName()).setColor(rarity.getMainColor(),
                     rarity.getMainColor().cpy().add(-0.08f, -0.08f, -0.08f, 0),
                     rarity.getMainColor().cpy().add(-0.16f, -0.16f, -0.16f, 0),
                     rarity.getTextColor());
-            weaponInfoStars.setColor(rarity.getTextColor());
+            weaponInfoStars.setText(weapon.getStarRating().getStarString()).setColor(rarity.getTextColor());
 
             weaponInfoStatsContainerBorder.getGraphicType().setColor(rarity.getBorderColor());
-
-            weaponInfoTitle.setText(weapon.getName());
 
             statNamesText.setText(weapon.getStatNamesString());
             statValuesText.setText(weapon.getStatValuesString());

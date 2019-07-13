@@ -51,11 +51,11 @@ public class EquippedWeaponsUI extends UI implements WeaponIconContainer {
                 graphicType.setColor(currentColor).draw(batch, centerX, centerY, width, height);
                 drawChildren(batch);
             }
-            public void press(double hoverTimer, double pressTimer) {
+            public void press(int button, double hoverTimer, double pressTimer) {
                 swapEqippedWeapons();
             }
-            public void hold(double hoverTimer, double pressTimer) {}
-            public void release(double hoverTimer, double pressTimer) {}
+            public void hold(int button, double hoverTimer, double pressTimer) {}
+            public void release(int button, double hoverTimer, double pressTimer) {}
             public void mouseOver(double hoverTimer) {}
             public void hover(double hoverTimer) {}
             public void mouseLeave(double hoverTimer) {}
@@ -68,11 +68,11 @@ public class EquippedWeaponsUI extends UI implements WeaponIconContainer {
                 graphicType.setColor(currentColor).draw(batch, centerX, centerY, -width, -height);
                 drawChildren(batch);
             }
-            public void press(double hoverTimer, double pressTimer) {
+            public void press(int button, double hoverTimer, double pressTimer) {
                 swapEqippedWeapons();
             }
-            public void hold(double hoverTimer, double pressTimer) {}
-            public void release(double hoverTimer, double pressTimer) {}
+            public void hold(int button, double hoverTimer, double pressTimer) {}
+            public void release(int button, double hoverTimer, double pressTimer) {}
             public void mouseOver(double hoverTimer) {}
             public void hover(double hoverTimer) {}
             public void mouseLeave(double hoverTimer) {}
